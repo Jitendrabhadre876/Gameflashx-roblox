@@ -8,14 +8,39 @@ import { ChevronRight, Play } from "lucide-react";
 import { MOCK_GAMES } from "@/lib/games";
 import Link from "next/link";
 
+interface Particle {
+  id: number;
+  width: string;
+  height: string;
+  left: string;
+  top: string;
+  animationDelay: string;
+  animationDuration: string;
+}
+
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const featuredGames = MOCK_GAMES.slice(0, 3);
 
   useEffect(() => {
+    // Timer for slides
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % featuredGames.length);
     }, 8000);
+
+    // Generate random particles only on the client after hydration
+    const generatedParticles = Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      width: Math.random() * 6 + 'px',
+      height: Math.random() * 6 + 'px',
+      left: Math.random() * 100 + '%',
+      top: Math.random() * 100 + '%',
+      animationDelay: Math.random() * 5 + 's',
+      animationDuration: Math.random() * 10 + 10 + 's'
+    }));
+    setParticles(generatedParticles);
+
     return () => clearInterval(timer);
   }, [featuredGames.length]);
 
@@ -77,19 +102,19 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Floating Particles Effect (Simplified CSS animation) */}
+      {/* Floating Particles Effect (Deferred until particles are set on client) */}
       <div className="absolute inset-0 pointer-events-none z-15 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((particle) => (
           <div
-            key={i}
+            key={particle.id}
             className="absolute rounded-full bg-primary/20 animate-float"
             style={{
-              width: Math.random() * 6 + 'px',
-              height: Math.random() * 6 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-              animationDelay: Math.random() * 5 + 's',
-              animationDuration: Math.random() * 10 + 10 + 's'
+              width: particle.width,
+              height: particle.height,
+              left: particle.left,
+              top: particle.top,
+              animationDelay: particle.animationDelay,
+              animationDuration: particle.animationDuration
             }}
           />
         ))}
