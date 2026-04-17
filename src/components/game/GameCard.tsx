@@ -1,11 +1,11 @@
 
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Star, Download, Zap, TrendingUp, Flame } from "lucide-react";
 import { Game } from "@/lib/games";
 import { Button } from "@/components/ui/button";
+import CloudinaryImage from "@/components/ui/CloudinaryImage";
 
 interface GameCardProps {
   game: Game;
@@ -23,7 +23,7 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
     return (
       <Link href={gameUrl} className="group flex-shrink-0 w-[450px] flex gap-4 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all">
         <div className="relative w-40 h-52 rounded-lg overflow-hidden flex-shrink-0 shadow-2xl">
-          <Image src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" data-ai-hint="game thumbnail" />
+          <CloudinaryImage src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
           {isTrending && (
              <div className="absolute top-2 left-2 px-2 py-0.5 bg-secondary text-[8px] font-black text-white rounded-full flex items-center gap-1 uppercase tracking-tighter shadow-lg">
@@ -55,7 +55,7 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
   if (variant === "premium") {
     return (
       <Link href={gameUrl} className="group relative w-full aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 animate-float hover:border-primary/50 transition-colors">
-        <Image src={game.banner} alt={game.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" data-ai-hint="game cover" />
+        <CloudinaryImage src={game.banner} alt={game.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 p-8 space-y-4">
           <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
   return (
     <Link href={gameUrl} className="group block bg-card rounded-xl border border-white/5 overflow-hidden hover:border-primary/30 hover:shadow-[0_0_30px_rgba(85,206,247,0.1)] transition-all">
       <div className="relative aspect-[3/4] overflow-hidden">
-        <Image src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" data-ai-hint="game image" />
+        <CloudinaryImage src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         
         <div className="absolute top-3 left-3 flex flex-col gap-2">

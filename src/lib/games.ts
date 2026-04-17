@@ -25,6 +25,19 @@ export interface Game {
   isTopDownload?: boolean;
 }
 
+const CLOUDINARY_CLOUD_NAME = 'dmafb7518';
+
+/**
+ * Generates an optimized Cloudinary URL.
+ * Falls back to a placeholder if the ID is missing.
+ */
+export function getCloudinaryUrl(publicId: string | null | undefined, transform = 'q_auto,f_auto') {
+  if (!publicId) return null;
+  // If it's already a full URL, return it
+  if (publicId.startsWith('http')) return publicId;
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transform}/${publicId}`;
+}
+
 const defaultReqs = {
   os: "Windows 10 64-bit / Mobile iOS/Android",
   processor: "Modern Multi-core Processor",
@@ -45,22 +58,28 @@ const gameNames = [
   "WhoLiked: Guess Likes Reposts", "Candy Crush Saga", "Travel Town - Merge Adventure", "Mini Metro"
 ];
 
-export const MOCK_GAMES: Game[] = gameNames.map((name, index) => ({
-  id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-  name: name,
-  category: "Mobile Games",
-  image: `https://picsum.photos/seed/${index + 100}/300/300`,
-  banner: `https://picsum.photos/seed/${index + 200}/1280/720`,
-  description: `Experience the thrill of ${name}. A top-rated mobile gaming experience optimized for maximum performance and fun. Download the official version now.`,
-  features: ["High-speed performance", "Offline support", "Premium rewards", "Easy to play"],
-  systemRequirements: defaultReqs,
-  screenshots: [`https://picsum.photos/seed/ss${index}/1280/720`],
-  rating: 4.5 + (Math.random() * 0.5),
-  size: (Math.floor(Math.random() * 500) + 100) + " MB",
-  downloadLink: "https://Gameflashx.space/cl/i/grr84r",
-  isTrending: index < 5,
-  isTopDownload: index % 3 === 0
-}));
+export const MOCK_GAMES: Game[] = gameNames.map((name, index) => {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  return {
+    id: slug,
+    name: name,
+    category: "Mobile Games",
+    // We attempt to use the slug as the Cloudinary public ID
+    image: getCloudinaryUrl(slug) || `https://picsum.photos/seed/${index + 100}/300/300`,
+    banner: getCloudinaryUrl(`${slug}-banner`) || `https://picsum.photos/seed/${index + 200}/1280/720`,
+    description: `Experience the thrill of ${name}. A top-rated mobile gaming experience optimized for maximum performance and fun. Download the official version now.`,
+    features: ["High-speed performance", "Offline support", "Premium rewards", "Easy to play"],
+    systemRequirements: defaultReqs,
+    screenshots: [
+      getCloudinaryUrl(`${slug}-ss1`) || `https://picsum.photos/seed/ss${index}/1280/720`
+    ],
+    rating: 4.5 + (Math.random() * 0.5),
+    size: (Math.floor(Math.random() * 500) + 100) + " MB",
+    downloadLink: "https://Gameflashx.space/cl/i/grr84r",
+    isTrending: index < 5,
+    isTopDownload: index % 3 === 0
+  };
+});
 
 export const CATEGORIES = [
   { name: "All Games", slug: "action", icon: "Gamepad2", imageId: "cat-action" },

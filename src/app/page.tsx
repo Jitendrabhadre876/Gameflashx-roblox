@@ -5,7 +5,7 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
-import Image from "next/image";
+import CloudinaryImage from "@/components/ui/CloudinaryImage";
 import { Download, Loader2, Sparkles, TrendingUp, Gamepad2, Zap } from "lucide-react";
 import { MOCK_GAMES } from "@/lib/games";
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ export default function HomePage() {
                 className="group bg-white rounded-3xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center"
               >
                 <div className="relative w-24 h-24 md:w-32 md:h-32 mb-4 rounded-[2rem] overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                  <Image 
+                  <CloudinaryImage 
                     src={game.image} 
                     alt={game.name} 
                     fill 
