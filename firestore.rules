@@ -1,0 +1,109 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * GAMEFLASHX.COM SECURITY RULES
+     * 
+     * Core Philosophy:
+     * This ruleset implements a Role-Based Access Control (RBAC) model focused on a clear distinction 
+     * between public marketplace visitors and administrative staff. 
+     *
+     * Data Structure:
+     * - /games: Publicly readable catalog of game assets.
+     * - /categories: Publicly readable classifications for organization.
+     * - /roles_admin: A protected collection where the existence of a document grants administrative privileges.
+     *
+     * Key Security Decisions:
+     * 1. Authorization Independence: Admin status is verified by checking the existence of a document 
+     *    in the `/roles_admin` collection matching the user's UID. This avoids complex logic in 
+     *    resource rules and keeps authorization performant.
+     * 2. Global Public Read: Game listings and categories are open for public 'get' and 'list' 
+     *    operations to support the SEO-friendly marketplace frontend.
+     * 3. Admin-Only Mutability: All write operations (create, update, delete) for core data 
+     *    are restricted to users verified via the admin role collection.
+     * 4. Structural Segregation: Administrative metadata (roles) is strictly separated from 
+     *    content (games) to prevent privilege escalation.
+     * 5. Relational Integrity: On creation of games or categories, the rules enforce that 
+     *    the internal ID field matches the Firestore document ID to ensure data consistency.
+     */
+
+    // --- Global Helper Functions ---
+
+    /** Checks if the user is authenticated with Firebase Auth. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** Checks if the authenticated user's UID matches the provided userId. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** 
+     * Checks if the user has administrative privileges.
+     * Verification is done by checking for the existence of an admin record.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /** 
+     * Combined check for admin rights and document existence.
+     * Used for update/delete operations to ensure they act on existing documents.
+     */
+    function isExistingAdmin() {
+      return isAdmin() && resource != null;
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for the primary game collection. Public read, Admin-only CRUD.
+     * @path /games/{gameId}
+     * @allow get, list: if true; (Publicly accessible for the frontend)
+     * @allow create: if isAdmin() && request.resource.data.id == gameId; (Authorized admin creating with ID consistency)
+     * @deny update: if !isAdmin(); (Non-admins cannot modify game data or download counts)
+     * @principle Public Read with Role-Based Writes and Path-to-Data consistency.
+     */
+    match /games/{gameId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == gameId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Rules for game categories. Public read, Admin-only CRUD.
+     * @path /categories/{categoryId}
+     * @allow get, list: if true; (Publicly accessible for the frontend)
+     * @allow create: if isAdmin() && request.resource.data.id == categoryId; (Authorized admin creating categories)
+     * @deny update: if request.resource.data.id != resource.data.id; (Prevents ID corruption)
+     * @principle Relational integrity and Role-Based Access.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == categoryId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Access control for admin roles. Determines who can manage the site.
+     * @path /roles_admin/{userId}
+     * @allow get: if isOwner(userId); (Users check their own admin status)
+     * @allow list: if isAdmin(); (Admins can list other admins)
+     * @allow write: if isAdmin(); (Only existing admins can promote/demote others)
+     * @deny create: if !isAdmin(); (Prevents self-promotion to admin status)
+     * @principle Database Access Control (DBAC) pattern.
+     */
+    match /roles_admin/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.userId == userId;
+      allow update: if isExistingAdmin() && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingAdmin();
+    }
+
+  }
+}

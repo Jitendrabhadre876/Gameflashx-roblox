@@ -1,0 +1,146 @@
+{
+  "entities": {
+    "Game": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Game",
+      "type": "object",
+      "description": "Represents a single game available for download on the Gameflashx marketplace, including its details and administrative metadata.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Game entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The official title of the game."
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Reference to the Category this game belongs to. (Relationship: Category 1:N Game)"
+        },
+        "thumbnailImageUrl": {
+          "type": "string",
+          "description": "URL for the game's thumbnail image, used in listings and cards.",
+          "format": "uri"
+        },
+        "bannerImageUrl": {
+          "type": "string",
+          "description": "URL for the game's large banner image, typically displayed on the game details page hero section.",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the game, potentially in rich text format."
+        },
+        "downloadLink": {
+          "type": "string",
+          "description": "URL for downloading the game, which can be an external affiliate link.",
+          "format": "uri"
+        },
+        "rating": {
+          "type": "number",
+          "description": "The aggregated rating of the game (e.g., out of 5 stars)."
+        },
+        "size": {
+          "type": "string",
+          "description": "The file size of the game download (e.g., '50 GB')."
+        },
+        "screenshotUrls": {
+          "type": "array",
+          "description": "An array of URLs for in-game screenshots, used in galleries.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the game record was created in the system.",
+          "format": "date-time"
+        },
+        "downloads": {
+          "type": "number",
+          "description": "A counter for the total number of times the game has been downloaded, incremented on each download click."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "categoryId",
+        "thumbnailImageUrl",
+        "bannerImageUrl",
+        "description",
+        "downloadLink",
+        "rating",
+        "size",
+        "screenshotUrls",
+        "createdAt",
+        "downloads"
+      ]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Defines a classification for games (e.g., genre, type), used for organization and filtering on the marketplace.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Category entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The human-readable name of the game category (e.g., 'Action', 'Battle Royale', 'Open World')."
+        },
+        "description": {
+          "type": "string",
+          "description": "An optional brief description or summary of what this category entails."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/games/{gameId}",
+        "definition": {
+          "entityName": "Game",
+          "schema": {
+            "$ref": "#/backend/entities/Game"
+          },
+          "description": "Main collection for all game entries. Documents are publicly readable for the website front-end and accessible for full CRUD operations by authenticated administrators. Includes `categoryId` for linking to game categories and a `downloads` counter, which is incremented via a server-side process to maintain security and atomicity."
+        }
+      },
+      {
+        "path": "/categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Collection for defining game categories. Documents are publicly readable for the website front-end and accessible for full CRUD operations by authenticated administrators."
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "AdminRole",
+          "schema": {
+            "$ref": "#/backend/entities/AdminRole"
+          },
+          "description": "This collection implements Database Access Control (DBAC) for admin roles. The existence of a document at `/roles_admin/{request.auth.uid}` signifies that the authenticated user is an administrator. This collection is only writable by existing administrators, and users can only read their own entry to verify their admin status."
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure for 'Gameflashx.com' prioritizes clear separation of concerns, robust access control, and public data accessibility, all while adhering to the core design principles of authorization independence and structural segregation. \n\n1.  **Authorization Independence:** Admin authorization is achieved through a dedicated `/roles_admin/{userId}` collection. The presence of a document in this collection for a specific `userId` (matching `request.auth.uid`) grants administrative privileges. This design completely eliminates the need for `get()` calls in security rules to determine admin status, making rules atomic, highly performant, and much easier to debug. For instance, a rule to check if a user is an admin simply checks `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))`. This is critical for maintaining transactional integrity and avoiding complex, nested authorization logic.\n\n2.  **Structural Segregation (Homogeneous Security Posture):**\n    *   The `/games` collection contains all game-related data. All documents within this collection share the same security posture: publicly readable for the front-end, but exclusively writable (create, update, delete) by authenticated administrators. This homogeneity simplifies security rules significantly, as there's no need to differentiate between public and private game data within the same collection (e.g., no 'draft' vs. 'published' status mixing). Any game added is immediately available publicly.\n    *   Similarly, the `/categories` collection holds all game categories, which are also publicly readable and admin-writable. This segregation ensures a clear, predictable access model for each type of data.\n    *   The `/roles_admin` collection is specifically for managing admin access. Its security posture is highly restricted; documents can only be created/updated/deleted by existing administrators (or during initial provisioning), and users can only read their own admin status.\n\n3.  **QAPs (Rules are not Filters):**\n    *   Both `/games` and `/categories` collections are designed to be entirely publicly readable. This means `list` operations (e.g., fetching all games for the homepage, or all categories for filtering) can be performed without Firestore security rules needing to filter results. The client can request all documents, and the rules will simply `allow read: if true;`, ensuring that only data intended for public consumption is stored here. This aligns with QAPs by making rules declarations of intent rather than complex filtering mechanisms, improving performance and security.\n    *   The 'downloads' counter increment is handled via a server-side process (e.g., a Firebase Cloud Function invoked by the client on click). This prevents complex and potentially vulnerable client-side write rules for anonymous users, further simplifying Firestore security rules to be primarily admin-centric for `Game` document modifications.\n\nThis structure ensures a secure, scalable, and highly debuggable backend for Gameflashx.com, meeting both public display and administrative management requirements effectively."
+  }
+}
