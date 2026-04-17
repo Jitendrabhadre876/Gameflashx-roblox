@@ -21,9 +21,12 @@ interface Particle {
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [mounted, setMounted] = useState(false);
   const featuredGames = MOCK_GAMES.slice(0, 3);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Timer for slides
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % featuredGames.length);
@@ -104,7 +107,7 @@ export default function Hero() {
 
       {/* Floating Particles Effect (Deferred until particles are set on client) */}
       <div className="absolute inset-0 pointer-events-none z-15 overflow-hidden">
-        {particles.map((particle) => (
+        {mounted && particles.map((particle) => (
           <div
             key={particle.id}
             className="absolute rounded-full bg-primary/20 animate-float"

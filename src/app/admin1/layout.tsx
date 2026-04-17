@@ -28,40 +28,61 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     async function checkAdmin() {
       if (isUserLoading) return;
+      
       if (!user) {
         setIsAdmin(false);
-        if (pathname !== '/admin1') router.push('/admin1');
+        if (pathname !== '/admin1') {
+          router.push('/admin1');
+        }
         return;
       }
 
-      const adminRef = doc(firestore, 'roles_admin', user.uid);
-      const adminSnap = await getDoc(adminRef);
-      
-      if (!adminSnap.exists()) {
-        setIsAdmin(false);
-        if (pathname !== '/admin1') router.push('/admin1');
-      } else {
-        setIsAdmin(true);
+      if (firestore) {
+        try {
+          const adminRef = doc(firestore, 'roles_admin', user.uid);
+          const adminSnap = await getDoc(adminRef);
+          
+          if (!adminSnap.exists()) {
+            setIsAdmin(false);
+            if (pathname !== '/admin1') {
+              router.push('/admin1');
+            }
+          } else {
+            setIsAdmin(true);
+          }
+        } catch (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+        }
       }
     }
     checkAdmin();
   }, [user, isUserLoading, pathname, firestore, router]);
 
   const handleLogout = () => {
-    auth.signOut().then(() => router.push('/admin1'));
+    if (auth) {
+      auth.signOut().then(() => router.push('/admin1'));
+    }
   };
 
-  if (pathname === '/admin1') return <>{children}</>;
+  // If we're on the login page, just render children without the admin layout
+  if (pathname === '/admin1') {
+    return <>{children}</>;
+  }
   
+  // Show loading state while checking user/admin status
   if (isUserLoading || isAdmin === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-[#070B14]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  if (!isAdmin) return null;
+  // If not admin and not on login page, render nothing (useEffect will redirect)
+  if (!isAdmin) {
+    return null;
+  }
 
   const menuItems = [
     { label: 'Dashboard', icon: LayoutDashboard, href: '/admin1/dashboard' },
