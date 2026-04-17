@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Loader2, Sparkles, Users, X, ShieldCheck } from 'lucide-react';
+import { Loader2, Sparkles, Users, X, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 const CUSTOM_ICON = "https://res.cloudinary.com/dmafb7518/image/upload/v1775750139/GAME_FLASH_20260409_212147_0000_eu5mys.png";
 const PROFILE_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/3acdf58d1dad75bdc82275056dceeb8a_iq5yni.jpg";
+const BANNER_THUMB = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/0100f6638632dfbf4fb70b4f8be239f6_xveqxc.jpg";
 const PARTNER_URL = "https://Gameflashx.space/cl/i/grr84r";
 
 const BANNERS = [
@@ -22,6 +24,12 @@ export default function FreeRobuxPage() {
   const [showIframe, setShowIframe] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
+  
+  // Verification State
+  const [username, setUsername] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,14 +38,26 @@ export default function FreeRobuxPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const rewards = [
-    { amount: '50,000', bonus: '+2500 bonus', popular: true },
-    { amount: '24,000', bonus: '+1500 bonus', popular: false },
-    { amount: '11,000', bonus: '+1000 bonus', popular: false },
-    { amount: '2,000', bonus: '+300 bonus', popular: false },
-  ];
+  const handleVerify = () => {
+    if (!username.trim()) {
+      setError('Please enter a valid username');
+      return;
+    }
+    setError('');
+    setIsVerifying(true);
+    
+    // Simulate API search
+    setTimeout(() => {
+      setIsVerifying(false);
+      setIsVerified(true);
+    }, 2500);
+  };
 
   const handleClaim = (amount: string) => {
+    if (!isVerified) {
+      setError('Please verify your account first');
+      return;
+    }
     setSelectedAmount(amount);
     setIsProcessing(true);
     
@@ -52,6 +72,13 @@ export default function FreeRobuxPage() {
       }, 10000);
     }, 2800);
   };
+
+  const rewards = [
+    { amount: '50,000', bonus: '+2500 bonus', popular: true },
+    { amount: '24,000', bonus: '+1500 bonus', popular: false },
+    { amount: '11,000', bonus: '+1000 bonus', popular: false },
+    { amount: '2,000', bonus: '+300 bonus', popular: false },
+  ];
 
   return (
     <div className="min-h-screen bg-black font-sans text-white selection:bg-[#00B06F]/30 overflow-x-hidden box-border">
@@ -91,102 +118,107 @@ export default function FreeRobuxPage() {
             <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-[#00B06F] shadow-lg">
               <Image src={PROFILE_IMG} alt="User" fill className="object-cover" />
             </div>
-            <span className="text-[10px] md:text-xs font-bold text-white whitespace-nowrap">Premium User</span>
+            <span className="text-[10px] md:text-xs font-bold text-white whitespace-nowrap">Guest</span>
           </div>
         </div>
       </div>
 
-      <main className="relative z-10 max-w-5xl mx-auto py-8 md:py-12 px-4 md:px-6">
+      <main className="relative z-10 max-w-2xl mx-auto py-8 md:py-12 px-4 md:px-6 space-y-6">
         
-        {/* Profile Header Hero */}
-        <div className="flex flex-col items-center mb-8 md:mb-12 animate-in fade-in slide-in-from-top-8 duration-1000">
-           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] mb-4 md:mb-6 transition-transform hover:scale-105 duration-500">
-              <Image src={PROFILE_IMG} alt="Profile" fill className="object-cover" />
-           </div>
-           <h1 className="text-3xl md:text-5xl font-black mb-2 text-center text-white drop-shadow-lg flex items-center gap-2">
-             Exclusive Rewards <Sparkles className="text-yellow-400 w-6 h-6 md:w-8 md:h-8 fill-current animate-pulse" />
-           </h1>
-           <p className="text-white/60 font-black uppercase tracking-[0.3em] text-[8px] md:text-[10px] text-center">
-             Premium member benefit active
-           </p>
+        {/* Profile + Banner Row */}
+        <div className="bg-white/5 backdrop-blur-xl p-4 rounded-[1.5rem] border border-white/10 flex items-center gap-4 shadow-2xl animate-in slide-in-from-top-4 duration-700">
+          <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-white shadow-lg flex-shrink-0">
+            <Image src={PROFILE_IMG} alt="Profile" fill className="object-cover" />
+          </div>
+          <div className="relative flex-1 h-[60px] rounded-[12px] overflow-hidden border border-white/5">
+             <Image src={BANNER_THUMB} alt="Banner" fill className="object-cover brightness-75" />
+             <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent flex items-center px-4">
+               <span className="text-xs font-black uppercase tracking-widest text-white/80">Account Connection</span>
+             </div>
+          </div>
         </div>
 
-        {/* Roblox Style Main Card */}
-        <div className="liquid-glass rounded-[1.5rem] md:rounded-[2.5rem] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-2xl animate-in zoom-in-95 duration-700">
-          
-          {/* Left Side: Badge Info */}
-          <div className="w-full md:w-1/3 p-6 md:p-10 border-b md:border-b-0 md:border-r border-white/5 bg-white/5 flex flex-col items-center">
-            <div className="relative w-32 h-32 md:w-44 md:h-44 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-4 border-white/10 shadow-2xl mb-6 md:mb-8 group">
-              <Image 
-                src="https://picsum.photos/seed/rewards-hero/500/500" 
-                alt="Rewards" 
-                fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-[3s]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            </div>
-            
-            <div className="space-y-3 md:space-y-4 w-full">
-              <div className="bg-[#00B06F]/10 text-[#00B06F] p-4 md:p-5 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] font-black uppercase flex items-center gap-3 border border-[#00B06F]/20">
-                <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" />
-                Verified Delivery
-              </div>
-              <div className="bg-white/5 text-white/40 p-4 md:p-5 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] font-black uppercase flex items-center gap-3 border border-white/5">
-                <Users className="w-4 h-4 md:w-5 md:h-5" /> Low Stock
-              </div>
-            </div>
-          </div>
-
-          {/* Center: Reward Selection */}
-          <div className="flex-1 p-6 md:p-10 bg-white/5">
-            <div className="grid grid-cols-1 gap-3 md:gap-4">
-              {rewards.map((reward, idx) => (
-                <div 
-                  key={reward.amount} 
-                  style={{ animationDelay: `${idx * 150}ms` }}
-                  className={cn(
-                    "group flex items-center justify-between p-4 md:p-6 rounded-[1.2rem] md:rounded-[2rem] border-2 border-transparent bg-white/5 hover:bg-white/10 hover:border-[#00B06F]/50 transition-all cursor-pointer shadow-lg animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden",
-                    reward.popular && "border-[#00B06F]/20"
-                  )}
-                  onClick={() => handleClaim(reward.amount)}
-                >
-                  <div className="flex items-center gap-3 md:gap-6 flex-1 min-w-0">
-                    <div className="relative w-10 h-10 md:w-14 md:h-14 flex-shrink-0 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:rotate-12 transition-transform">
-                      <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                        <span className="text-xl md:text-4xl font-black tracking-tighter text-white truncate">{reward.amount}</span>
-                        {reward.popular && (
-                          <span className="bg-[#00B06F] text-white text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg shadow-[#00B06F]/40 animate-pulse whitespace-nowrap">Popular</span>
-                        )}
-                      </div>
-                      <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] block truncate">{reward.bonus}</span>
-                    </div>
-                  </div>
-                  
-                  <Button className="flex-shrink-0 w-24 md:w-32 bg-[#00B06F] hover:bg-[#008F5B] text-white font-black rounded-full h-10 md:h-16 shadow-xl shadow-[#00B06F]/20 transition-all active:scale-95 text-sm md:text-xl group-hover:scale-105 ml-4 whitespace-nowrap">
-                    Free
-                  </Button>
+        {/* Username Input Section */}
+        <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[1.5rem] border border-white/10 shadow-2xl space-y-4 animate-in slide-in-from-bottom-4 duration-700">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Identification</label>
+              {isVerified && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00B06F]/20 border border-[#00B06F]/30 text-[#00B06F] text-[9px] font-black uppercase animate-in zoom-in-95">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Verified
                 </div>
-              ))}
+              )}
             </div>
-
-            <div className="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
-              <div className="text-center md:text-left">
-                <p className="text-[8px] md:text-[10px] text-[#00B06F] font-black uppercase tracking-[0.3em] mb-1">
-                  * Instant Release Active
-                </p>
-                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
-                  Secure transfer assigned
-                </p>
-              </div>
-              <div className="flex items-center gap-3 text-white font-black text-xs md:text-sm bg-white/10 px-6 md:px-8 py-2 md:py-3 rounded-full border border-white/10 backdrop-blur-md">
-                <Users className="w-4 h-4 md:w-5 md:h-5 text-[#00B06F]" /> 254 left
-              </div>
-            </div>
+            <Input 
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={isVerified}
+              className="bg-black/40 border-white/10 text-white h-14 rounded-[12px] text-lg font-bold placeholder:text-white/20 focus:ring-[#00B06F]/50 transition-all"
+            />
           </div>
+          
+          {error && (
+            <div className="flex items-center gap-2 text-destructive text-xs font-bold animate-pulse">
+              <AlertCircle className="w-4 h-4" /> {error}
+            </div>
+          )}
+
+          {!isVerified ? (
+            <Button 
+              onClick={handleVerify}
+              disabled={isVerifying}
+              className="w-full bg-gradient-to-r from-[#00B06F] to-[#008F5B] hover:brightness-110 text-white font-black h-14 rounded-[12px] text-lg shadow-xl shadow-[#00B06F]/20 transition-all"
+            >
+              {isVerifying ? <Loader2 className="w-6 h-6 animate-spin" /> : "Continue"}
+            </Button>
+          ) : (
+            <p className="text-center text-[10px] font-bold text-white/30 uppercase tracking-widest">
+              Sync complete. Choose your reward package below.
+            </p>
+          )}
         </div>
+
+        {/* Reward Section */}
+        <div className={cn(
+          "space-y-4 transition-all duration-700",
+          !isVerified ? "opacity-30 pointer-events-none grayscale" : "opacity-100"
+        )}>
+          {rewards.map((reward, idx) => (
+            <div 
+              key={reward.amount} 
+              style={{ animationDelay: `${idx * 150}ms` }}
+              className={cn(
+                "group flex items-center justify-between p-4 md:p-6 rounded-[1.2rem] md:rounded-[2rem] border-2 border-transparent bg-white/5 hover:bg-white/10 hover:border-[#00B06F]/50 transition-all cursor-pointer shadow-lg animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden",
+                reward.popular && "border-[#00B06F]/20"
+              )}
+              onClick={() => handleClaim(reward.amount)}
+            >
+              <div className="flex items-center gap-3 md:gap-6 flex-1 min-w-0">
+                <div className="relative w-10 h-10 md:w-14 md:h-14 flex-shrink-0 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:rotate-12 transition-transform">
+                  <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                    <span className="text-xl md:text-3xl font-black tracking-tighter text-white truncate">{reward.amount}</span>
+                    {reward.popular && (
+                      <span className="bg-[#00B06F] text-white text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg shadow-[#00B06F]/40 animate-pulse whitespace-nowrap">Popular</span>
+                    )}
+                  </div>
+                  <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] block truncate">{reward.bonus}</span>
+                </div>
+              </div>
+              
+              <Button className="flex-shrink-0 w-24 md:w-28 bg-[#00B06F] hover:bg-[#008F5B] text-white font-black rounded-full h-10 md:h-12 shadow-xl shadow-[#00B06F]/20 transition-all active:scale-95 text-xs md:text-sm group-hover:scale-105 ml-4 whitespace-nowrap">
+                Free
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-[10px] text-white/20 font-black uppercase tracking-[0.3em] pt-8">
+          Complete a partner task to unlock rewards
+        </p>
       </main>
 
       {/* Step 1: Processing Modal */}
@@ -225,7 +257,7 @@ export default function FreeRobuxPage() {
               </div>
               <div>
                 <DialogTitle className="text-xl md:text-2xl font-black text-white tracking-tighter">Final Step</DialogTitle>
-                <p className="text-[8px] md:text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">Complete one task to unlock reward</p>
+                <p className="text-[8px] md:text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">Verification for {username}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setShowIframe(false)} className="rounded-full hover:bg-white/10 text-white/40">
@@ -257,10 +289,6 @@ export default function FreeRobuxPage() {
         @keyframes progress {
           0% { width: 0%; }
           100% { width: 100%; }
-        }
-        .liquid-glass {
-          background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-          backdrop-filter: blur(12px);
         }
       `}</style>
     </div>
