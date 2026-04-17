@@ -1,30 +1,35 @@
+'use client';
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import GameDetailClient from "./GameDetailClient";
-import { MOCK_GAMES } from "@/lib/games";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Script from "next/script";
+import { useDoc, useFirebase, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const game = MOCK_GAMES.find(g => g.id === id);
-  if (!game) return {};
+export default function GamePage() {
+  const params = useParams();
+  const { firestore } = useFirebase();
+  const id = params.id as string;
 
-  return {
-    title: `Download ${game.name} APK Latest Version - Gameflashx`,
-    description: `Download ${game.name} APK latest version for free. Fast download, no login required. Available on Gameflashx.`,
-    openGraph: {
-      title: game.name,
-      description: game.description,
-      images: [game.banner],
-    },
-  };
-}
+  const gameRef = useMemoFirebase(() => {
+    if (!firestore || !id) return null;
+    return doc(firestore, 'games', id);
+  }, [firestore, id]);
 
-export default async function GameSEOPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const game = MOCK_GAMES.find(g => g.id === id);
+  const { data: game, isLoading } = useDoc(gameRef);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#070B14] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-white/50 font-black uppercase tracking-widest text-xs">Decrypting Assets...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!game) {
     notFound();
@@ -35,7 +40,7 @@ export default async function GameSEOPage({ params }: { params: Promise<{ id: st
     "@context": "https://schema.org",
     "@type": ["SoftwareApplication", "VideoGame"],
     "name": game.name,
-    "operatingSystem": game.systemRequirements.os,
+    "operatingSystem": game.systemRequirements?.os || "Windows 10/11",
     "applicationCategory": "GameApplication",
     "genre": game.category,
     "aggregateRating": {
@@ -50,7 +55,7 @@ export default async function GameSEOPage({ params }: { params: Promise<{ id: st
       "priceCurrency": "USD"
     },
     "description": game.description,
-    "screenshot": game.screenshots[0] || game.image
+    "screenshot": game.screenshotUrls?.[0] || game.thumbnailImageUrl
   };
 
   return (
@@ -62,7 +67,7 @@ export default async function GameSEOPage({ params }: { params: Promise<{ id: st
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="flex-grow pt-20">
-        <GameDetailClient initialGame={game} />
+        <GameDetailClient initialGame={game as any} />
       </main>
       <Footer />
     </div>

@@ -1,19 +1,21 @@
 'use server';
 
-import { initializeFirebase, getSdks } from '@/firebase';
+import { initializeFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Server actions for interacting with the Twitch/IGDB API securely.
+ * @fileOverview Secure server actions for IGDB API integration.
+ * Credentials are kept on the server to prevent exposure.
  */
 
-const CLIENT_ID = "e9dvk6840snexs4moxgce8uoe1oajz";
-const CLIENT_SECRET = "Jitu2003";
+const CLIENT_ID = "cf3jor2yo3pm2x0y542xg52tvz0riu";
+const CLIENT_SECRET = "pgx4gcy75zbjjw8nimng0qjwe8p9fl";
 
 /**
- * Retrieves an OAuth2 access token from Twitch using Client Credentials.
+ * Retrieves an OAuth2 access token from Twitch.
  */
 export async function getTwitchAccessToken() {
+  console.log("Twitch Auth: Requesting access token...");
   const response = await fetch("https://id.twitch.tv/oauth2/token", {
     method: "POST",
     headers: {
@@ -31,13 +33,14 @@ export async function getTwitchAccessToken() {
   if (!response.ok) {
     throw new Error(data.message || "Failed to get Twitch access token");
   }
+  console.log("Twitch Auth: Token acquired.");
   return data.access_token;
 }
 
 /**
  * Formats IGDB image URLs to high-quality https versions.
  */
-function processIgdbUrl(url: string | undefined, size: string = 't_1080p') {
+function processIgdbUrl(url: string | undefined, size: string = 't_cover_big') {
   if (!url) return '';
   return `https:${url.replace('t_thumb', size)}`;
 }
@@ -49,7 +52,7 @@ export async function bulkImportIGDBGames() {
   try {
     const token = await getTwitchAccessToken();
     
-    // Fetch top games with relevant metadata
+    console.log("IGDB Fetch: Requesting top games...");
     const response = await fetch("https://api.igdb.com/v4/games", {
       method: "POST",
       headers: {
@@ -57,7 +60,7 @@ export async function bulkImportIGDBGames() {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "text/plain"
       },
-      body: `fields name, rating, summary, cover.url, screenshots.url, artworks.url, genres.name; limit 20; where rating > 80; sort rating desc;`,
+      body: `fields name, rating, summary, cover.url, screenshots.url, genres.name; limit 20; where rating > 75 & cover != null; sort rating desc;`,
       cache: 'no-store'
     });
 
@@ -66,54 +69,52 @@ export async function bulkImportIGDBGames() {
     }
 
     const igdbGames = await response.json();
+    console.log(`IGDB Fetch: Received ${igdbGames.length} games.`);
     
-    // Initialize Firebase Admin-like access via Server SDK (safe in Server Actions)
     const { firestore } = initializeFirebase();
-    const gamesCollection = collection(firestore, 'games');
-
     let importCount = 0;
 
     for (const game of igdbGames) {
       const gameId = game.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       
       const thumbnail = processIgdbUrl(game.cover?.url, 't_cover_big');
-      const firstScreenshot = game.screenshots?.[0]?.url ? processIgdbUrl(game.screenshots[0].url, 't_1080p') : '';
-      const banner = game.artworks?.[0]?.url ? processIgdbUrl(game.artworks[0].url, 't_1080p') : firstScreenshot;
+      const banner = game.screenshots?.[0]?.url 
+        ? processIgdbUrl(game.screenshots[0].url, 't_1080p') 
+        : thumbnail;
       const screenshots = (game.screenshots || []).map((s: any) => processIgdbUrl(s.url, 't_720p'));
       const category = game.genres?.[0]?.name || 'Action';
-      const categoryId = category.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
       const gameData = {
         id: gameId,
         name: game.name,
-        categoryId: categoryId,
+        categoryId: category.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         category: category,
         thumbnailImageUrl: thumbnail,
-        image: thumbnail, // compatibility field
+        image: thumbnail,
         bannerImageUrl: banner,
-        banner: banner, // compatibility field
+        banner: banner,
         description: game.summary || "No description available.",
-        downloadLink: "https://gameflashx.com/download-unavailable", // Default link
+        downloadLink: "https://gameflashx.com/download-unavailable",
         rating: game.rating ? Math.round((game.rating / 20) * 10) / 10 : 4.5,
-        size: "Various",
+        size: "Varies",
         screenshotUrls: screenshots,
-        screenshots: screenshots, // compatibility field
+        screenshots: screenshots,
         createdAt: serverTimestamp(),
         downloads: 0,
         features: ["Auto-Imported", "Premium Graphics", "Verified"],
         systemRequirements: {
           os: "Windows 10/11",
-          processor: "Modern Quad-Core",
+          processor: "Modern CPU",
           memory: "8 GB RAM",
-          graphics: "GTX 1050+",
+          graphics: "DirectX 12 Compatible",
           storage: "Varies"
         }
       };
 
-      // Use setDoc with merge to prevent overwriting custom data if game already exists
       const docRef = doc(firestore, 'games', gameId);
       await setDoc(docRef, gameData, { merge: true });
       importCount++;
+      console.log(`Firestore Write: ${game.name} saved.`);
     }
 
     return { success: true, count: importCount };
@@ -124,40 +125,24 @@ export async function bulkImportIGDBGames() {
 }
 
 /**
- * Searches for games on IGDB using the provided query (Existing single import logic).
+ * Searches for a specific game on IGDB.
  */
 export async function searchIGDBGames(query: string) {
   try {
     const token = await getTwitchAccessToken();
-    
-    const response = await fetch("https://id.twitch.tv/oauth2/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        grant_type: "client_credentials"
-      })
-    });
-
-    const body = `search "${query}"; fields name, rating, summary, cover.url, screenshots.url, artworks.url, genres.name; limit 5;`;
-    
-    const igdbResponse = await fetch("https://api.igdb.com/v4/games", {
+    const response = await fetch("https://api.igdb.com/v4/games", {
       method: "POST",
       headers: {
         "Client-ID": CLIENT_ID,
         "Authorization": `Bearer ${token}`,
         "Content-Type": "text/plain"
       },
-      body: body,
+      body: `search "${query}"; fields name, rating, summary, cover.url, screenshots.url, genres.name; limit 5;`,
       cache: 'no-store'
     });
 
-    if (!igdbResponse.ok) {
-      throw new Error("Failed to fetch games from IGDB");
-    }
-
-    return await igdbResponse.json();
+    if (!response.ok) return [];
+    return await response.json();
   } catch (error) {
     console.error("IGDB Search Error:", error);
     return [];
