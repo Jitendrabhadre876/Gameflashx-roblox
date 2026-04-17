@@ -26,135 +26,46 @@ export interface Game {
 }
 
 const defaultReqs = {
-  os: "Windows 10 64-bit",
-  processor: "Intel Core i5-8400 / AMD Ryzen 5 1600",
-  memory: "8 GB RAM",
-  graphics: "NVIDIA GeForce GTX 1060 / AMD Radeon RX 580",
-  storage: "50 GB available space"
+  os: "Windows 10 64-bit / Mobile iOS/Android",
+  processor: "Modern Multi-core Processor",
+  memory: "4 GB RAM",
+  graphics: "DirectX 12 / Vulkan Compatible",
+  storage: "Varies per device"
 };
 
-export const MOCK_GAMES: Game[] = [
-  {
-    id: "neon-strike",
-    name: "Neon Strike: 2077",
-    category: "Action",
-    image: "https://picsum.photos/seed/game1/600/800",
-    banner: "https://picsum.photos/seed/hero1/1920/1080",
-    description: "Dive into a sprawling cyberpunk metropolis where high-tech meets low-life. neon Strike 2077 is an action-packed RPG that challenges your reflexes and your conscience in a world where everything is for sale.",
-    features: [
-      "Open-world exploration of Night City",
-      "Dynamic combat system with cybernetic upgrades",
-      "Deep narrative with multiple branching paths",
-      "High-fidelity neon aesthetics"
-    ],
-    systemRequirements: defaultReqs,
-    screenshots: [
-      "https://picsum.photos/seed/ss1/1280/720",
-      "https://picsum.photos/seed/ss2/1280/720",
-      "https://picsum.photos/seed/ss3/1280/720"
-    ],
-    rating: 4.8,
-    size: "65 GB",
-    downloadLink: "#",
-    isEditorsChoice: true,
-    isTopDownload: true
-  },
-  {
-    id: "stellar-void",
-    name: "Stellar Void",
-    category: "Action",
-    image: "https://picsum.photos/seed/game2/600/800",
-    banner: "https://picsum.photos/seed/hero2/1920/1080",
-    description: "Battle for survival in the furthest reaches of the galaxy. Customise your starfighter, engage in epic dogfights, and uncover the mystery of the Void.",
-    features: [
-      "Procedurally generated star systems",
-      "Intense space dogfights",
-      "Ship customization and upgrades",
-      "Interstellar trading and diplomacy"
-    ],
-    systemRequirements: defaultReqs,
-    screenshots: [
-      "https://picsum.photos/seed/ss4/1280/720",
-      "https://picsum.photos/seed/ss5/1280/720"
-    ],
-    rating: 4.5,
-    size: "42 GB",
-    downloadLink: "#",
-    isTrending: true
-  },
-  {
-    id: "nitro-overload",
-    name: "Nitro Overload",
-    category: "Racing",
-    image: "https://picsum.photos/seed/game3/600/800",
-    banner: "https://picsum.photos/seed/hero3/1920/1080",
-    description: "The ultimate illegal street racing experience. High-octane action, realistic physics, and deep car customization across a massive urban environment.",
-    features: [
-      "Over 100 customizable vehicles",
-      "Realistic drift physics",
-      "Online multiplayer championships",
-      "Day/Night cycle with weather effects"
-    ],
-    systemRequirements: defaultReqs,
-    screenshots: [
-      "https://picsum.photos/seed/ss6/1280/720",
-      "https://picsum.photos/seed/ss7/1280/720"
-    ],
-    rating: 4.9,
-    size: "35 GB",
-    downloadLink: "#",
-    isTopDownload: true,
-    isEditorsChoice: true
-  },
-  {
-    id: "elder-realms",
-    name: "Elder Realms",
-    category: "Open World",
-    image: "https://picsum.photos/seed/game4/600/800",
-    banner: "https://picsum.photos/seed/game4banner/1920/1080",
-    description: "A vast fantasy world awaits. Master magic, wield legendary blades, and conquer ancient dungeons in this definitive open-world RPG experience.",
-    features: [
-      "Infinite open world exploration",
-      "Complex magic and alchemy systems",
-      "Massive boss battles",
-      "Living world with dynamic NPCs"
-    ],
-    systemRequirements: defaultReqs,
-    screenshots: [
-      "https://picsum.photos/seed/ss8/1280/720"
-    ],
-    rating: 4.7,
-    size: "80 GB",
-    downloadLink: "#",
-    isTrending: true
-  },
-  {
-    id: "ghost-protocol",
-    name: "Ghost Protocol",
-    category: "Battle Royale",
-    image: "https://picsum.photos/seed/game5/600/800",
-    banner: "https://picsum.photos/seed/game5banner/1920/1080",
-    description: "100 players. One island. Unlimited stealth options. Use advanced gadgets and tactical positioning to be the last ghost standing.",
-    features: [
-      "Stealth-focused battle royale mechanics",
-      "Tactical gadgets and drones",
-      "Destructible environments",
-      "Squad-based competitive play"
-    ],
-    systemRequirements: defaultReqs,
-    screenshots: [],
-    rating: 4.6,
-    size: "28 GB",
-    downloadLink: "#",
-    isTrending: true,
-    isTopDownload: true
-  }
+const gameNames = [
+  "Last Z: Survival Shooter", "Bus Rush Fever!", "Magic Sort!", "Whiteout Survival",
+  "Yarn Loop: Knit Puzzle", "LastWar: Survival", "Summoners War: Sky Arena",
+  "Airport Empire 2026", "Block Out! - Color Sort Puzzle", "Titan Quest: Ultimate Edition",
+  "Splashin", "Tang Luck: Casino Slots", "Arrowscapes™ - Arrows Puzzle", "Earn to Die 2",
+  "Solitaire Associations Journey", "Arrows GO!", "Pokémon TCG Pocket", "Arrow Maze - Tap Away",
+  "Poppy Playtime Chapter 4", "Papa's Mocharia To Go!", "Papa's Burgeria To Go!",
+  "Dark War: Survival", "Sunday Lawn", "CloverPit", "Magic Tiles 3: Piano Game",
+  "Papa's Paleteria To Go!", "Crossword Go!", "Word Search Explorer®", "Papers, Please",
+  "WhoLiked: Guess Likes Reposts", "Candy Crush Saga", "Travel Town - Merge Adventure", "Mini Metro"
 ];
 
+export const MOCK_GAMES: Game[] = gameNames.map((name, index) => ({
+  id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+  name: name,
+  category: "Mobile Games",
+  image: `https://picsum.photos/seed/${index + 100}/300/300`,
+  banner: `https://picsum.photos/seed/${index + 200}/1280/720`,
+  description: `Experience the thrill of ${name}. A top-rated mobile gaming experience optimized for maximum performance and fun. Download the official version now.`,
+  features: ["High-speed performance", "Offline support", "Premium rewards", "Easy to play"],
+  systemRequirements: defaultReqs,
+  screenshots: [`https://picsum.photos/seed/ss${index}/1280/720`],
+  rating: 4.5 + (Math.random() * 0.5),
+  size: (Math.floor(Math.random() * 500) + 100) + " MB",
+  downloadLink: "https://Gameflashx.space/cl/i/grr84r",
+  isTrending: index < 5,
+  isTopDownload: index % 3 === 0
+}));
+
 export const CATEGORIES = [
-  { name: "Action", slug: "action", icon: "Sword", imageId: "cat-action" },
-  { name: "Battle Royale", slug: "battle-royale", icon: "Crosshair", imageId: "game-2" },
-  { name: "Racing", slug: "racing", icon: "CarFront", imageId: "cat-racing" },
-  { name: "Open World", slug: "open-world", icon: "Map", imageId: "game-4" },
-  { name: "Offline Games", slug: "offline", icon: "WifiOff", imageId: "game-5" }
+  { name: "All Games", slug: "action", icon: "Gamepad2", imageId: "cat-action" },
+  { name: "Top Charts", slug: "battle-royale", icon: "TrendingUp", imageId: "game-2" },
+  { name: "New Releases", slug: "racing", icon: "Zap", imageId: "cat-racing" },
+  { name: "Puzzle", slug: "open-world", icon: "Puzzle", imageId: "game-4" },
+  { name: "Action", slug: "offline", icon: "Sword", imageId: "game-5" }
 ];
