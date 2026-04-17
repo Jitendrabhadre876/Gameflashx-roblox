@@ -25,9 +25,11 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
     });
   };
 
+  const gameUrl = `/games/${game.id}`;
+
   if (variant === "horizontal") {
     return (
-      <Link href={`/game/${game.id}`} className="group flex-shrink-0 w-[450px] flex gap-4 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all">
+      <Link href={gameUrl} className="group flex-shrink-0 w-[450px] flex gap-4 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all">
         <div className="relative w-40 h-52 rounded-lg overflow-hidden flex-shrink-0 shadow-2xl">
           <Image src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" data-ai-hint="game thumbnail" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
@@ -53,7 +55,7 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
 
   if (variant === "premium") {
     return (
-      <Link href={`/game/${game.id}`} className="group relative w-full aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 animate-float hover:border-primary/50 transition-colors">
+      <Link href={gameUrl} className="group relative w-full aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 animate-float hover:border-primary/50 transition-colors">
         <Image src={game.banner} alt={game.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" data-ai-hint="game cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 p-8 space-y-4">
@@ -71,7 +73,7 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
   }
 
   return (
-    <Link href={`/game/${game.id}`} className="group block bg-card rounded-xl border border-white/5 overflow-hidden hover:border-primary/30 hover:shadow-[0_0_30px_rgba(85,206,247,0.1)] transition-all">
+    <Link href={gameUrl} className="group block bg-card rounded-xl border border-white/5 overflow-hidden hover:border-primary/30 hover:shadow-[0_0_30px_rgba(85,206,247,0.1)] transition-all">
       <div className="relative aspect-[3/4] overflow-hidden">
         <Image src={game.image} alt={game.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" data-ai-hint="game image" />
         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10">

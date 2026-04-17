@@ -17,13 +17,14 @@ export default function Navbar() {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center neon-glow-primary group-hover:scale-110 transition-transform">
             <Gamepad2 className="text-white w-6 h-6" />
           </div>
-          <span className="text-2xl font-black tracking-tighter text-white font-headline">
+          <span className="text-2xl font-black tracking-tighter text-white font-headline uppercase">
             GAME<span className="text-primary">FLASHX</span>
           </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-semibold uppercase tracking-widest text-white/70">
           <Link href="/" className="hover:text-primary transition-colors">Store</Link>
+          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <Link href="/category/action" className="hover:text-primary transition-colors">Categories</Link>
           <Link href="/about" className="hover:text-primary transition-colors">About</Link>
         </div>
@@ -52,6 +53,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="absolute top-20 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-6 md:hidden">
           <Link href="/" className="text-lg font-bold" onClick={() => setIsMenuOpen(false)}>Store</Link>
+          <Link href="/blog" className="text-lg font-bold" onClick={() => setIsMenuOpen(false)}>Blog</Link>
           <Link href="/category/action" className="text-lg font-bold" onClick={() => setIsMenuOpen(false)}>Categories</Link>
           <Link href="/about" className="text-lg font-bold" onClick={() => setIsMenuOpen(false)}>About</Link>
           <div className="relative">
