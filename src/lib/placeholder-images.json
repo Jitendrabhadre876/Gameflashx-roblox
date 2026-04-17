@@ -1,3 +1,70 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "Cyberpunk city at night with neon lights",
+      "imageUrl": "https://picsum.photos/seed/hero1/1920/1080",
+      "imageHint": "cyberpunk city"
+    },
+    {
+      "id": "hero-2",
+      "description": "Futuristic space battle with glowing ships",
+      "imageUrl": "https://picsum.photos/seed/hero2/1920/1080",
+      "imageHint": "space battle"
+    },
+    {
+      "id": "hero-3",
+      "description": "High speed racing car on a neon track",
+      "imageUrl": "https://picsum.photos/seed/hero3/1920/1080",
+      "imageHint": "racing car"
+    },
+    {
+      "id": "game-1",
+      "description": "Action RPG character thumbnail",
+      "imageUrl": "https://picsum.photos/seed/game1/600/800",
+      "imageHint": "warrior armor"
+    },
+    {
+      "id": "game-2",
+      "description": "Battle royale island landscape",
+      "imageUrl": "https://picsum.photos/seed/game2/600/800",
+      "imageHint": "island landscape"
+    },
+    {
+      "id": "game-3",
+      "description": "Modern supercar close up",
+      "imageUrl": "https://picsum.photos/seed/game3/600/800",
+      "imageHint": "supercar"
+    },
+    {
+      "id": "game-4",
+      "description": "Open world fantasy forest",
+      "imageUrl": "https://picsum.photos/seed/game4/600/800",
+      "imageHint": "fantasy forest"
+    },
+    {
+      "id": "game-5",
+      "description": "Horror game dark hallway",
+      "imageUrl": "https://picsum.photos/seed/game5/600/800",
+      "imageHint": "dark hallway"
+    },
+    {
+      "id": "cat-action",
+      "description": "Action category icon background",
+      "imageUrl": "https://picsum.photos/seed/cataction/400/250",
+      "imageHint": "explosion fire"
+    },
+    {
+      "id": "cat-racing",
+      "description": "Racing category icon background",
+      "imageUrl": "https://picsum.photos/seed/catracing/400/250",
+      "imageHint": "speed blur"
+    },
+    {
+      "id": "cat-rpg",
+      "description": "RPG category icon background",
+      "imageUrl": "https://picsum.photos/seed/catrpg/400/250",
+      "imageHint": "magic wand"
+    }
+  ]
 }
