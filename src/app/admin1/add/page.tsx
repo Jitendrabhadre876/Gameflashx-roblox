@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebase } from '@/firebase';
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES } from '@/lib/games';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Image as ImageIcon, Link as LinkIcon, Info, Save, Search, Zap, Loader2, Sparkles } from 'lucide-react';
+import { PlusCircle, Image as ImageIcon, Link as LinkIcon, Save, Search, Zap, Loader2, Sparkles } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { searchIGDBGames } from '@/app/actions/igdb';
 import { aiGeneratedGameVisuals } from '@/ai/flows/ai-generated-game-visuals';
@@ -46,31 +45,33 @@ export default function AddGamePage() {
       if (results && results.length > 0) {
         const game = results[0];
         
-        // Process images (convert thumbnail to 1080p for banner, big for thumb)
+        // Helper to convert IGDB thumbnail URLs to high-quality formats
         const processUrl = (url?: string, size: string = 't_1080p') => {
           if (!url) return '';
+          // IGDB URLs start with //images.igdb... so we add https:
           return `https:${url.replace('t_thumb', size)}`;
         };
 
-        const firstScreenshot = game.screenshots?.[0]?.url;
-        const mainArt = game.artworks?.[0]?.url || firstScreenshot;
+        const mainCover = game.cover?.url ? processUrl(game.cover.url, 't_cover_big') : '';
+        const firstScreenshot = game.screenshots?.[0]?.url ? processUrl(game.screenshots[0].url, 't_1080p') : '';
+        const mainBanner = game.artworks?.[0]?.url ? processUrl(game.artworks[0].url, 't_1080p') : firstScreenshot;
 
         setFormData(prev => ({
           ...prev,
           name: game.name,
           description: game.summary || '',
           rating: game.rating ? Math.round((game.rating / 20) * 10) / 10 : 4.5,
-          thumbnailImageUrl: processUrl(game.cover?.url, 't_cover_big'),
-          bannerImageUrl: processUrl(mainArt, 't_1080p'),
-          screenshotUrls: (game.screenshots || []).map((s: any) => processUrl(s.url, 't_720p')).join(', '),
+          thumbnailImageUrl: mainCover,
+          bannerImageUrl: mainBanner,
+          screenshotUrls: (game.screenshots || []).slice(0, 5).map((s: any) => processUrl(s.url, 't_720p')).join(', '),
         }));
         
-        toast({ title: "Import Successful", description: `Data for ${game.name} loaded from IGDB.` });
+        toast({ title: "Import Successful", description: `Metadata for "${game.name}" loaded.` });
       } else {
-        toast({ variant: "destructive", title: "No Results", description: "Couldn't find that game on IGDB." });
+        toast({ variant: "destructive", title: "No Results", description: "Game not found in IGDB database." });
       }
     } catch (err) {
-      toast({ variant: "destructive", title: "Search Failed", description: "Error connecting to Twitch/IGDB API." });
+      toast({ variant: "destructive", title: "Search Failed", description: "Error communicating with IGDB API." });
     } finally {
       setSearching(false);
     }
@@ -78,7 +79,7 @@ export default function AddGamePage() {
 
   const handleAIGenerate = async () => {
     if (!formData.name || !formData.description) {
-      toast({ variant: "destructive", title: "Missing Info", description: "Enter a name and description first." });
+      toast({ variant: "destructive", title: "Missing Info", description: "Provide a name and description for the AI to analyze." });
       return;
     }
     setGeneratingAI(true);
@@ -96,9 +97,9 @@ export default function AddGamePage() {
         bannerImageUrl: visuals.bannerUrl,
       }));
       
-      toast({ title: "AI Visuals Generated", description: "Premium images have been applied to your game." });
+      toast({ title: "AI Visuals Ready", description: "High-end images generated successfully." });
     } catch (err) {
-      toast({ variant: "destructive", title: "AI Generation Failed", description: "Could not generate visuals at this time." });
+      toast({ variant: "destructive", title: "AI Generation Failed", description: "Service temporarily unavailable." });
     } finally {
       setGeneratingAI(false);
     }
@@ -129,37 +130,37 @@ export default function AddGamePage() {
       screenshots: screenshotsArray,
       createdAt: serverTimestamp(),
       downloads: 0,
-      features: ["Instant Download", "High Speed CDN", "Zero Limits", "Verified Secure"],
+      features: ["Premium Access", "High Speed Download", "Verified File", "Cloud Optimized"],
       systemRequirements: {
         os: "Windows 10/11",
-        processor: "Modern Quad-Core",
+        processor: "Quad-Core i5+",
         memory: "8 GB RAM",
-        graphics: "GTX 1060 or better",
-        storage: formData.size || "50 GB"
+        graphics: "GTX 1060+",
+        storage: formData.size || "40 GB"
       }
     };
 
     const docRef = doc(firestore, 'games', gameId);
     setDocumentNonBlocking(docRef, gameData, { merge: true });
     
-    toast({ title: "Game Published", description: `${formData.name} is now live.` });
+    toast({ title: "Published", description: `${formData.name} is now live on the marketplace.` });
     router.push('/admin1/manage');
     setLoading(false);
   };
 
   return (
-    <div className="max-w-4xl">
-      {/* IGDB Import Tool */}
-      <Card className="glass-morphism border-primary/20 bg-primary/5 mb-12 overflow-hidden">
+    <div className="max-w-4xl pb-20">
+      {/* IGDB Import Card */}
+      <Card className="glass-morphism border-primary/20 bg-primary/5 mb-10 overflow-hidden">
         <CardHeader className="p-8 pb-4">
           <CardTitle className="text-xl font-black text-white flex items-center gap-3">
-            <Search className="text-primary w-6 h-6" /> IGDB Smart Import
+            <Search className="text-primary w-6 h-6" /> IGDB Rapid Import
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8 pt-0">
           <div className="flex gap-4">
             <Input 
-              placeholder="Search for a game to auto-fill..." 
+              placeholder="Enter game title (e.g. Elden Ring)..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-white/5 border-white/10 text-white h-12"
@@ -171,28 +172,27 @@ export default function AddGamePage() {
               disabled={searching}
             >
               {searching ? <Loader2 className="animate-spin w-5 h-5" /> : <Zap className="w-5 h-5" />}
-              {searching ? "Searching..." : "Import Data"}
+              {searching ? "Searching..." : "Auto-Fill"}
             </Button>
           </div>
           <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-4">
-            Powered by Twitch/IGDB API for real-time metadata
+            Instant metadata synchronization with Twitch Gaming Database
           </p>
         </CardContent>
       </Card>
 
-      <form onSubmit={handleSubmit} className="space-y-8 pb-20">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <Card className="glass-morphism border-white/5 overflow-hidden">
           <CardHeader className="bg-primary/10 border-b border-white/5 p-8">
             <CardTitle className="text-2xl font-black text-white flex items-center gap-3">
-              <PlusCircle className="text-primary w-7 h-7" /> Basic Information
+              <PlusCircle className="text-primary w-7 h-7" /> Core Game Details
             </CardTitle>
           </CardHeader>
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Game Name</label>
+                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Game Title</label>
                 <Input 
-                  placeholder="e.g. Cyberpunk 2077" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="bg-white/5 border-white/10 text-white h-12"
@@ -200,12 +200,12 @@ export default function AddGamePage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Category</label>
+                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Marketplace Category</label>
                 <Select onValueChange={(val) => setFormData({...formData, categoryId: val})} value={formData.categoryId} required>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white h-12">
-                    <SelectValue placeholder="Select genre" />
+                    <SelectValue placeholder="Choose a genre" />
                   </SelectTrigger>
-                  <SelectContent className="bg-card border-white/10 text-white">
+                  <SelectContent className="bg-[#070B14] border-white/10 text-white">
                     {CATEGORIES.map(cat => (
                       <SelectItem key={cat.slug} value={cat.slug}>{cat.name}</SelectItem>
                     ))}
@@ -215,10 +215,9 @@ export default function AddGamePage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Description</label>
+              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Full Description</label>
               <Textarea 
-                placeholder="Enter rich description here..." 
-                className="bg-white/5 border-white/10 text-white min-h-[150px]"
+                className="bg-white/5 border-white/10 text-white min-h-[150px] leading-relaxed"
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 required
@@ -230,7 +229,7 @@ export default function AddGamePage() {
         <Card className="glass-morphism border-white/5 overflow-hidden">
           <CardHeader className="bg-secondary/10 border-b border-white/5 p-8 flex flex-row items-center justify-between">
             <CardTitle className="text-2xl font-black text-white flex items-center gap-3">
-              <ImageIcon className="text-secondary w-7 h-7" /> Media & Visuals
+              <ImageIcon className="text-secondary w-7 h-7" /> High-Resolution Media
             </CardTitle>
             <Button 
               type="button"
@@ -240,14 +239,13 @@ export default function AddGamePage() {
               disabled={generatingAI}
             >
               {generatingAI ? <Loader2 className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-              AI Generate Visuals
+              AI Image Gen
             </Button>
           </CardHeader>
           <CardContent className="p-8 space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Thumbnail URL</label>
+              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Vertical Thumbnail URL</label>
               <Input 
-                placeholder="https://..." 
                 value={formData.thumbnailImageUrl}
                 onChange={(e) => setFormData({...formData, thumbnailImageUrl: e.target.value})}
                 className="bg-white/5 border-white/10 text-white"
@@ -255,9 +253,8 @@ export default function AddGamePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Banner Image URL</label>
+              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Hero Banner URL</label>
               <Input 
-                placeholder="https://..." 
                 value={formData.bannerImageUrl}
                 onChange={(e) => setFormData({...formData, bannerImageUrl: e.target.value})}
                 className="bg-white/5 border-white/10 text-white"
@@ -265,10 +262,9 @@ export default function AddGamePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Screenshots (Comma separated URLs)</label>
+              <label className="text-xs font-black text-white/40 uppercase tracking-widest">Screenshot Gallery (Comma separated)</label>
               <Textarea 
-                placeholder="url1, url2, url3..." 
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white/5 border-white/10 text-white h-24"
                 value={formData.screenshotUrls}
                 onChange={(e) => setFormData({...formData, screenshotUrls: e.target.value})}
               />
@@ -279,15 +275,14 @@ export default function AddGamePage() {
         <Card className="glass-morphism border-white/5 overflow-hidden">
           <CardHeader className="bg-primary/10 border-b border-white/5 p-8">
             <CardTitle className="text-2xl font-black text-white flex items-center gap-3">
-              <LinkIcon className="text-primary w-7 h-7" /> Links & Specs
+              <LinkIcon className="text-primary w-7 h-7" /> Distribution & Specs
             </CardTitle>
           </CardHeader>
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Download Link</label>
+                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Direct Download Link</label>
                 <Input 
-                  placeholder="Direct URL" 
                   value={formData.downloadLink}
                   onChange={(e) => setFormData({...formData, downloadLink: e.target.value})}
                   className="bg-white/5 border-white/10 text-white"
@@ -295,7 +290,7 @@ export default function AddGamePage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Rating (0.0 - 5.0)</label>
+                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Rating (1-5)</label>
                 <Input 
                   type="number" 
                   step="0.1" 
@@ -307,9 +302,9 @@ export default function AddGamePage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Game Size (e.g. 50 GB)</label>
+                <label className="text-xs font-black text-white/40 uppercase tracking-widest">Total Size (GB)</label>
                 <Input 
-                  placeholder="50 GB" 
+                  placeholder="e.g. 50 GB" 
                   value={formData.size}
                   onChange={(e) => setFormData({...formData, size: e.target.value})}
                   className="bg-white/5 border-white/10 text-white"
@@ -326,7 +321,7 @@ export default function AddGamePage() {
             className="flex-1 bg-primary hover:bg-primary/80 text-primary-foreground font-black h-16 rounded-full neon-glow-primary text-xl gap-3"
             disabled={loading}
           >
-            <Save className="w-6 h-6" /> {loading ? "Publishing..." : "Publish Game"}
+            <Save className="w-6 h-6" /> {loading ? "Publishing..." : "Launch Game"}
           </Button>
           <Button 
             type="button" 

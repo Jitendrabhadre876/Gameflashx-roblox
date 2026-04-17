@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -39,13 +38,15 @@ export async function searchIGDBGames(query: string) {
   try {
     const token = await getTwitchAccessToken();
     
+    // IGDB uses a custom query language in the POST body
     const response = await fetch("https://api.igdb.com/v4/games", {
       method: "POST",
       headers: {
         "Client-ID": CLIENT_ID,
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "text/plain"
       },
-      body: `search "${query}"; fields name, summary, cover.url, screenshots.url, genres.name, rating, artworks.url; limit 5;`,
+      body: `search "${query}"; fields name, rating, summary, cover.url, screenshots.url, artworks.url, genres.name; limit 5;`,
       cache: 'no-store'
     });
 
@@ -53,7 +54,8 @@ export async function searchIGDBGames(query: string) {
       throw new Error("Failed to fetch games from IGDB");
     }
 
-    return await response.json();
+    const games = await response.json();
+    return games;
   } catch (error) {
     console.error("IGDB Search Error:", error);
     return [];
