@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirebase } from '@/firebase';
@@ -7,16 +6,18 @@ import { collection, doc, deleteDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Edit, Trash2, Search, ExternalLink, Download } from 'lucide-react';
+import { Edit, Trash2, Search, ExternalLink, Download, RefreshCcw, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMemoFirebase } from '@/firebase';
 import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { bulkImportIGDBGames } from '@/app/actions/igdb';
 import Image from 'next/image';
 
 export default function ManageGamesPage() {
   const { firestore } = useFirebase();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const gamesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -42,12 +43,39 @@ export default function ManageGamesPage() {
     }
   };
 
+  const handleBulkImport = async () => {
+    setIsSyncing(true);
+    try {
+      const result = await bulkImportIGDBGames();
+      if (result.success) {
+        toast({
+          title: "Import Successful",
+          description: `Successfully synced ${result.count} high-rated games from IGDB.`,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Import Failed",
+          description: result.error || "An unknown error occurred during sync.",
+        });
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Connection Error",
+        description: "Could not reach the IGDB sync service.",
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   if (isLoading) return <div className="text-white">Loading games inventory...</div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1">
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
           <Input 
             placeholder="Search by name or category..." 
@@ -56,8 +84,13 @@ export default function ManageGamesPage() {
             className="pl-10 bg-white/5 border-white/10 text-white h-12 rounded-xl"
           />
         </div>
-        <Button className="h-12 px-8 bg-primary text-primary-foreground font-bold rounded-xl">
-          Search
+        <Button 
+          onClick={handleBulkImport}
+          disabled={isSyncing}
+          className="h-12 px-8 bg-secondary hover:bg-secondary/80 text-white font-black rounded-xl gap-2 w-full md:w-auto neon-glow-secondary"
+        >
+          {isSyncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCcw className="w-5 h-5" />}
+          {isSyncing ? "Syncing Catalog..." : "Sync IGDB Catalog"}
         </Button>
       </div>
 
@@ -78,7 +111,12 @@ export default function ManageGamesPage() {
                 <TableCell className="font-medium text-white">
                   <div className="flex items-center gap-3">
                     <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-white/10">
-                      <Image src={game.image || 'https://picsum.photos/seed/placeholder/100/100'} alt={game.name} fill className="object-cover" />
+                      <Image 
+                        src={game.image || game.thumbnailImageUrl || 'https://picsum.photos/seed/placeholder/100/100'} 
+                        alt={game.name} 
+                        fill 
+                        className="object-cover" 
+                      />
                     </div>
                     <span>{game.name}</span>
                   </div>
@@ -108,7 +146,7 @@ export default function ManageGamesPage() {
                       <Trash2 className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="hover:bg-white/10 text-primary" asChild>
-                      <a href={`/game/${game.id}`} target="_blank">
+                      <a href={`/games/${game.id}`} target="_blank">
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     </Button>
