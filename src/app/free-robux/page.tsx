@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Loader2, Users, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Users, X, CheckCircle2, AlertCircle, Search as SearchIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -23,6 +23,7 @@ export default function FreeRobuxPage() {
   const [displayedName, setDisplayedName] = useState('Guest');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState('');
   const [error, setError] = useState('');
 
   // Persist Username on Load
@@ -42,19 +43,25 @@ export default function FreeRobuxPage() {
     }
     setError('');
     setIsVerifying(true);
+    setVerificationStatus('Finding user...');
     
-    // Simulate API search/verification
+    // Simulate Realistic Search Flow
+    setTimeout(() => {
+      setVerificationStatus('Connecting to server...');
+    }, 1200);
+
     setTimeout(() => {
       setIsVerifying(false);
       setIsVerified(true);
       setDisplayedName(username);
+      setVerificationStatus('');
       localStorage.setItem('gameflash_user', username);
-    }, 2500);
+    }, 3000);
   };
 
   const handleClaim = (amount: string) => {
     if (!isVerified) {
-      setError('Please verify your account first');
+      setError('Please search and verify your account first');
       return;
     }
     setSelectedAmount(amount);
@@ -63,13 +70,6 @@ export default function FreeRobuxPage() {
     setTimeout(() => {
       setIsProcessing(false);
       setShowIframe(true);
-      
-      // Auto redirect fallback
-      setTimeout(() => {
-        if (typeof window !== 'undefined') {
-          // window.location.href = PARTNER_URL;
-        }
-      }, 10000);
     }, 2800);
   };
 
@@ -116,7 +116,7 @@ export default function FreeRobuxPage() {
           <div className="relative flex-1 h-[60px] rounded-xl overflow-hidden border border-gray-100 bg-white">
              <Image src={BANNER_THUMB} alt="Banner" fill className="object-cover" />
              <div className="absolute inset-0 bg-black/5 flex items-center px-4">
-               <span className="text-[10px] font-black uppercase tracking-widest text-white drop-shadow-md">Account Connection</span>
+               {/* Banner text removed for clean look */}
              </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function FreeRobuxPage() {
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Identification</label>
               {isVerified && (
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00B06F]/10 border border-[#00B06F]/20 text-[#00B06F] text-[9px] font-black uppercase">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Verified
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Username found successfully
                 </div>
               )}
             </div>
@@ -136,7 +136,7 @@ export default function FreeRobuxPage() {
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              disabled={isVerified}
+              disabled={isVerified || isVerifying}
               className="bg-white border-gray-200 text-[#111] h-14 rounded-xl text-lg font-bold placeholder:text-gray-300 focus:ring-[#00B06F]/20 transition-all shadow-inner"
             />
           </div>
@@ -147,18 +147,36 @@ export default function FreeRobuxPage() {
             </div>
           )}
 
+          {isVerifying && (
+            <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#00B06F] animate-pulse">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> {verificationStatus}
+            </div>
+          )}
+
           {!isVerified ? (
             <Button 
               onClick={handleVerify}
               disabled={isVerifying}
-              className="w-full bg-gradient-to-r from-[#00B06F] to-[#008F5B] hover:brightness-105 text-white font-black h-14 rounded-xl text-lg shadow-lg shadow-[#00B06F]/10"
+              className="w-full bg-gradient-to-r from-[#00B06F] to-[#008F5B] hover:brightness-105 text-white font-black h-14 rounded-xl text-lg shadow-lg shadow-[#00B06F]/10 gap-2"
             >
-              {isVerifying ? <Loader2 className="w-6 h-6 animate-spin" /> : "Continue"}
+              {isVerifying ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <SearchIcon className="w-5 h-5" />
+                  Search
+                </>
+              )}
             </Button>
           ) : (
-            <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              Identity linked. Selection is now available.
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Identity linked. Selection is now available.
+              </p>
+            </div>
           )}
         </div>
 
@@ -247,10 +265,16 @@ export default function FreeRobuxPage() {
             </Button>
           </DialogHeader>
           
-          <div className="relative bg-gray-50 h-[60vh] md:h-[550px] flex flex-col">
+          <div className="relative bg-gray-50 h-[60vh] md:h-[650px] flex flex-col">
+            <div className="p-6 md:p-8 bg-white border-b border-gray-100 text-center">
+              <p className="text-sm md:text-base font-medium text-gray-600 leading-relaxed">
+                ✨ Complete <span className="text-[#00B06F] font-bold">ONE</span> quick offers now — simply answer a few questions or try an app for 5 minutes — and your reward will be delivered automatically to your account.
+              </p>
+            </div>
+
             <iframe 
               src={PARTNER_URL} 
-              className="w-full h-full border-none"
+              className="w-full flex-grow border-none"
               title="Partner Verification"
             />
             
