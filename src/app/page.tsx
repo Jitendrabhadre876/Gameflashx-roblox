@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import GameCard from "@/components/game/GameCard";
 import CategoryGrid from "@/components/home/CategoryGrid";
+import AdSlot from "@/components/ads/AdSlot";
 import { MOCK_GAMES } from "@/lib/games";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
@@ -37,14 +38,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <CategoryGrid />
-
         {/* Ad Placement 1 */}
         <div className="px-6 md:px-12 max-w-7xl mx-auto py-10">
-           <div className="w-full h-32 glass-morphism rounded-2xl flex items-center justify-center border-dashed border-white/20">
-              <span className="text-white/20 font-bold tracking-widest uppercase">Promoted Content</span>
-           </div>
+           <AdSlot label="Trending Offer" />
         </div>
+
+        <CategoryGrid />
 
         {/* Editor's Choice Section */}
         <section className="px-6 md:px-12 max-w-7xl mx-auto py-20">
@@ -64,6 +63,11 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* Ad Placement 2 */}
+        <div className="px-6 md:px-12 max-w-7xl mx-auto py-10">
+           <AdSlot label="Premium Partner" />
+        </div>
 
         {/* Trending Games Grid */}
         <section className="px-6 md:px-12 max-w-7xl mx-auto py-20">

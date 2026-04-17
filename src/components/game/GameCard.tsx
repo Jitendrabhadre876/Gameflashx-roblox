@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Star, Download } from "lucide-react";
 import { Game } from "@/lib/games";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 
 interface GameCardProps {
   game: Game;
@@ -14,17 +13,7 @@ interface GameCardProps {
 }
 
 export default function GameCard({ game, variant = "vertical" }: GameCardProps) {
-  const { toast } = useToast();
-
-  const handleDownload = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toast({
-      title: "Download Started",
-      description: `Preparing ${game.name} for installation...`,
-    });
-  };
-
+  const downloadUrl = `/games/${game.id}/download`;
   const gameUrl = `/games/${game.id}`;
 
   if (variant === "horizontal") {
@@ -44,9 +33,11 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
           </div>
           <div className="space-y-4">
              <div className="text-sm text-white/60 line-clamp-2">{game.description}</div>
-             <Button onClick={handleDownload} className="w-fit bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary h-9 px-6 text-xs gap-2">
-               <Download className="w-4 h-4" /> Download
-             </Button>
+             <Link href={downloadUrl}>
+               <Button className="w-fit bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary h-9 px-6 text-xs gap-2">
+                 <Download className="w-4 h-4" /> Download
+               </Button>
+             </Link>
           </div>
         </div>
       </Link>
@@ -64,9 +55,11 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
             <span className="flex items-center gap-1 text-primary text-sm font-bold"><Star className="w-4 h-4 fill-current" /> {game.rating}</span>
           </div>
           <h3 className="text-3xl font-black text-white">{game.name}</h3>
-          <Button onClick={handleDownload} className="bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary px-10 h-12 gap-2">
-            <Download className="w-5 h-5" /> Download Now
-          </Button>
+          <Link href={downloadUrl}>
+            <Button className="bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary px-10 h-12 gap-2">
+              <Download className="w-5 h-5" /> Download Now
+            </Button>
+          </Link>
         </div>
       </Link>
     );
@@ -88,9 +81,11 @@ export default function GameCard({ game, variant = "vertical" }: GameCardProps) 
             <span className="flex items-center gap-1 text-primary"><Star className="w-3 h-3 fill-current" /> {game.rating}</span>
           </div>
         </div>
-        <Button onClick={handleDownload} className="w-full bg-white/5 hover:bg-primary hover:text-primary-foreground text-white border border-white/10 font-bold h-11 rounded-full group-hover:neon-glow-primary transition-all gap-2">
-          <Download className="w-4 h-4" /> Download
-        </Button>
+        <Link href={downloadUrl} className="block">
+          <Button className="w-full bg-white/5 hover:bg-primary hover:text-primary-foreground text-white border border-white/10 font-bold h-11 rounded-full group-hover:neon-glow-primary transition-all gap-2">
+            <Download className="w-4 h-4" /> Download
+          </Button>
+        </Link>
       </div>
     </Link>
   );

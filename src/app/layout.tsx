@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import CursorGlow from "@/components/layout/CursorGlow";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+import StickyMobileAd from "@/components/ads/StickyMobileAd";
 
 export const metadata: Metadata = {
   title: 'Gameflashx | Instant Game Downloads',
@@ -26,6 +27,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <CursorGlow />
           {children}
+          <StickyMobileAd />
           <Toaster />
         </FirebaseClientProvider>
       </body>

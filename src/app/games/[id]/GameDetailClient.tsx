@@ -3,9 +3,11 @@
 
 import { useDoc, useFirebase } from "@/firebase";
 import Image from "next/image";
-import { Star, Download, ShieldCheck, Cpu, HardDrive, LayoutGrid, Monitor, Layers } from "lucide-react";
+import Link from "next/link";
+import { Star, Download, ShieldCheck, Cpu, HardDrive, LayoutGrid, Monitor, Layers, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RelatedGames from "@/components/game/RelatedGames";
+import AdSlot from "@/components/ads/AdSlot";
 import {
   Carousel,
   CarouselContent,
@@ -14,14 +16,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useMemoFirebase } from "@/firebase";
-import { doc, increment } from "firebase/firestore";
-import { updateDocumentNonBlocking } from "@/firebase/non-blocking-updates";
-import { useToast } from "@/hooks/use-toast";
+import { doc } from "firebase/firestore";
 import { Game } from "@/lib/games";
 
 export default function GameDetailClient({ initialGame }: { initialGame: Game }) {
   const { firestore } = useFirebase();
-  const { toast } = useToast();
   
   const gameRef = useMemoFirebase(() => {
     if (!firestore || !initialGame.id) return null;
@@ -31,17 +30,7 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
   const { data: realtimeGame } = useDoc(gameRef);
   const game = realtimeGame || initialGame;
 
-  const handleDownload = () => {
-    if (!firestore || !game.id) return;
-    
-    const ref = doc(firestore, 'games', game.id);
-    updateDocumentNonBlocking(ref, { downloads: increment(1) });
-    
-    toast({
-      title: "Download Started",
-      description: `Preparing ${game.name} for installation...`,
-    });
-  };
+  const downloadUrl = `/games/${game.id}/download`;
 
   return (
     <>
@@ -70,12 +59,20 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white font-headline">{game.name}</h1>
             <div className="flex flex-wrap gap-4">
+              <Link href={downloadUrl}>
+                <Button 
+                  size="lg" 
+                  className="h-14 px-12 bg-primary hover:bg-primary/80 text-primary-foreground font-black rounded-full neon-glow-primary text-xl gap-3"
+                >
+                  <Download className="w-6 h-6" /> Download Now
+                </Button>
+              </Link>
               <Button 
                 size="lg" 
-                className="h-14 px-12 bg-primary hover:bg-primary/80 text-primary-foreground font-black rounded-full neon-glow-primary text-xl gap-3"
-                onClick={handleDownload}
+                variant="outline"
+                className="h-14 px-8 border-secondary text-secondary hover:bg-secondary/10 font-black rounded-full text-lg gap-3"
               >
-                <Download className="w-6 h-6" /> Download Now
+                <Zap className="w-5 h-5" /> Fast Download (No Ads)
               </Button>
             </div>
           </div>
@@ -144,10 +141,10 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
                 </div>
               </div>
               <div className="flex gap-4">
-                <Layers className="text-white/30 w-5 h-5 flex-shrink-0" />
+                <Monitor className="text-white/30 w-5 h-5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-white/30 uppercase font-black tracking-widest mb-1">Memory</p>
-                  <p className="text-sm text-white/80">{game.systemRequirements.memory}</p>
+                  <p className="text-xs text-white/30 uppercase font-black tracking-widest mb-1">Graphics</p>
+                  <p className="text-sm text-white/80">{game.systemRequirements.graphics}</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -160,9 +157,7 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
             </div>
           </div>
           
-          <div className="w-full aspect-square glass-morphism rounded-2xl flex items-center justify-center border-dashed border-white/20">
-             <span className="text-white/20 font-bold tracking-widest uppercase">Promoted Slot</span>
-          </div>
+          <AdSlot variant="vertical" label="Trending Games" />
         </div>
       </div>
 
