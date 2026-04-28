@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { GLOBAL_CTA_LINK } from '@/lib/games';
+import RecentActivityToast from '@/components/rewards/RecentActivityToast';
 
 const CUSTOM_ICON = "https://res.cloudinary.com/dmafb7518/image/upload/v1775750139/GAME_FLASH_20260409_212147_0000_eu5mys.png";
 const PROFILE_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/3acdf58d1dad75bdc82275056dceeb8a_iq5yni.jpg";
@@ -86,12 +87,7 @@ export default function FreeRobuxPage() {
       setShowIframe(true);
       
       // Reset the system after a claim is initiated
-      resetUserSystem();
-      
-      // Fallback redirect after 8 seconds if iframe is blocked
-      setTimeout(() => {
-        if (showIframe) window.location.href = PARTNER_URL;
-      }, 8000);
+      // We keep the internal verified state until the user finishes interaction
     }, 2500);
   };
 
@@ -111,7 +107,7 @@ export default function FreeRobuxPage() {
         
         {/* Profile + Banner Section */}
         <div className="bg-[#F8F9FB] p-4 rounded-3xl border border-gray-100 flex items-center gap-4 shadow-sm animate-in fade-in duration-700">
-          <div className="relative w-[70px] h-[70px] rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
+          <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
             <Image src={PROFILE_IMG} alt="Profile" fill className="object-cover" />
           </div>
           <div className="relative flex-1 rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-inner flex items-center">
@@ -245,7 +241,13 @@ export default function FreeRobuxPage() {
       <Footer />
 
       {/* Processing State Modal */}
-      <Dialog open={isProcessing} onOpenChange={setIsProcessing}>
+      <Dialog 
+        open={isProcessing} 
+        onOpenChange={(open) => {
+          setIsProcessing(open);
+          if (!open) resetUserSystem();
+        }}
+      >
         <DialogContent className="sm:max-w-md bg-white border-none rounded-[2.5rem] p-10 text-center shadow-2xl outline-none">
           <div className="flex flex-col items-center space-y-6">
             <div className="relative">
@@ -268,7 +270,13 @@ export default function FreeRobuxPage() {
       </Dialog>
 
       {/* Verification Iframe Modal */}
-      <Dialog open={showIframe} onOpenChange={setShowIframe}>
+      <Dialog 
+        open={showIframe} 
+        onOpenChange={(open) => {
+          setShowIframe(open);
+          if (!open) resetUserSystem();
+        }}
+      >
         <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-white border-none rounded-[2.5rem] p-0 overflow-hidden shadow-2xl outline-none">
           <DialogHeader className="p-6 md:p-8 bg-gray-50 border-b border-gray-100 flex flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-4">
@@ -288,7 +296,7 @@ export default function FreeRobuxPage() {
           <div className="relative bg-gray-50 h-[65vh] flex flex-col">
             <div className="p-6 md:p-8 bg-white border-b border-gray-100 text-center">
               <p className="text-sm md:text-base font-medium text-gray-600 leading-relaxed px-4">
-                ✨ Complete <span className="text-[#00B06F] font-bold underline">ONE</span> quick offers now — simply answer a few questions or try an app for 5 minutes — and your reward will be delivered automatically.
+                ✨ Complete <span className="text-[#00B06F] font-bold underline">ONE</span> quick offers now — simply answer a few questions or try an app for 5 minutes — and your reward will be delivered automatically to your account.
               </p>
             </div>
 
@@ -310,6 +318,9 @@ export default function FreeRobuxPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Social Proof */}
+      <RecentActivityToast />
 
       <style jsx global>{`
         @keyframes progress {
