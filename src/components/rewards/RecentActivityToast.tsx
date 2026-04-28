@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle2, Zap, Loader2, Coins } from 'lucide-react';
+import { Zap, Loader2, Coins } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * Interface for activity entries
- */
 interface ActivityEntry {
   username: string;
   type: 'start' | 'progress' | 'unlocking' | 'unlocked';
@@ -15,8 +12,7 @@ interface ActivityEntry {
 }
 
 /**
- * Masking logic: First char of each word + ****
- * Splits by space or underscore.
+ * Masking logic: First character visible, rest ****
  */
 const maskUsername = (name: string) => {
   if (!name) return 'U****';
@@ -27,15 +23,11 @@ const maskUsername = (name: string) => {
     .join(' ');
 };
 
-/**
- * Component to display floating activity notifications
- */
 export default function RecentActivityToast() {
   const [activeToast, setActiveToast] = useState<ActivityEntry | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [sessionUsers, setSessionUsers] = useState<string[]>(['RobloxPlayer', 'Gamer_Girl', 'Legendary_User', 'System_Admin']);
 
-  // Listen for username updates from the main page
   useEffect(() => {
     const handleUpdate = (e: any) => {
       const name = e.detail;
@@ -51,7 +43,7 @@ export default function RecentActivityToast() {
     const randomUser = sessionUsers[Math.floor(Math.random() * sessionUsers.length)];
     const types: ActivityEntry['type'][] = ['start', 'progress', 'unlocking', 'unlocked'];
     const randomType = types[Math.floor(Math.random() * types.length)];
-    const amounts = ['50', '100', '250', '500', '800'];
+    const amounts = ['50', '100', '400', '800', '1700'];
     const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
 
     return {
@@ -82,15 +74,12 @@ export default function RecentActivityToast() {
       setActiveToast(nextToast);
       setIsVisible(true);
 
-      // Auto-dismiss after 3.5 seconds
       setTimeout(() => setIsVisible(false), 3500);
 
-      // Schedule next toast (random 4-6 seconds)
       const nextDelay = Math.floor(Math.random() * 2000) + 4000;
       timeoutId = setTimeout(triggerToast, nextDelay);
     };
 
-    // Initial start
     timeoutId = setTimeout(triggerToast, 3000);
 
     return () => {
@@ -105,7 +94,7 @@ export default function RecentActivityToast() {
     switch (entry.type) {
       case 'start': return 'started a task';
       case 'progress': return 'verification in progress';
-      case 'unlocking': return 'unlocking reward...';
+      case 'unlocking': return 'processing request';
       case 'unlocked': return `reward unlocked: ${entry.amount} Robux`;
       default: return 'active';
     }
