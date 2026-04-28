@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { MOCK_GAMES, CATEGORIES } from "@/lib/games";
@@ -82,11 +81,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               <Button className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary">
                 Apply Filters
               </Button>
-            </div>
-
-            {/* Side Ad */}
-            <div className="w-full h-64 glass-morphism rounded-2xl flex items-center justify-center border-dashed border-white/20">
-               <span className="text-white/20 font-bold tracking-widest uppercase">Promoted Slot</span>
             </div>
           </aside>
 

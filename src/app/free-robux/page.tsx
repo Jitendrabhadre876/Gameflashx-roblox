@@ -16,14 +16,6 @@ const PROFILE_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_
 const BANNER_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/0100f6638632dfbf4fb70b4f8be239f6_xveqxc.jpg";
 const PARTNER_URL = GLOBAL_CTA_LINK;
 
-const DEMO_MESSAGES = [
-  "Demo: Reward unlocked: 50 Robux",
-  "Demo: Reward unlocked: 100 Robux",
-  "Demo: Task completed successfully",
-  "Demo: Verification step finished",
-  "Demo: New reward package prepared",
-];
-
 export default function FreeRobuxPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showIframe, setShowIframe] = useState(false);
@@ -35,38 +27,6 @@ export default function FreeRobuxPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('');
   const [error, setError] = useState('');
-
-  // Social Proof State
-  const [showActivity, setShowActivity] = useState(false);
-  const [activityIndex, setActivityIndex] = useState(0);
-
-  // Social Proof Logic
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
-    const showNext = () => {
-      if (document.visibilityState !== 'visible') {
-        timeoutId = setTimeout(showNext, 5000);
-        return;
-      }
-
-      setActivityIndex(Math.floor(Math.random() * DEMO_MESSAGES.length));
-      setShowActivity(true);
-      
-      // Auto-dismiss after 4 seconds
-      setTimeout(() => {
-        setShowActivity(false);
-        // Random interval for next appearance (6-10s)
-        const nextInterval = Math.floor(Math.random() * (10000 - 6000 + 1) + 6000);
-        timeoutId = setTimeout(showNext, nextInterval);
-      }, 4000);
-    };
-
-    const initialDelay = Math.floor(Math.random() * 5000 + 3000);
-    timeoutId = setTimeout(showNext, initialDelay);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
 
   // Persist Username on Load
   useEffect(() => {
@@ -237,27 +197,6 @@ export default function FreeRobuxPage() {
           </div>
         </div>
       </main>
-
-      {/* Social Proof Toast */}
-      {showActivity && (
-        <div className="fixed bottom-6 right-6 z-[60] animate-in slide-in-from-right-10 fade-in duration-500 pointer-events-none">
-          <div className="bg-[#111]/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[300px]">
-            <div className="relative w-8 h-8 shrink-0 bg-white/10 rounded-lg p-1">
-              <Image src={CUSTOM_ICON} alt="Icon" fill className="object-contain" />
-            </div>
-            <div>
-              <p className="text-white text-[11px] font-medium leading-tight">
-                <span className="text-gray-400">Demo:</span> 
-                <span className="ml-1">{DEMO_MESSAGES[activityIndex].split(':')[1].trim()}</span>
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#00B06F] animate-pulse" />
-                <span className="text-[9px] font-bold text-[#00B06F] uppercase tracking-tighter">Verified Activity</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Footer />
 

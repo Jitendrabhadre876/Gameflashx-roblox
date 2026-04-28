@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDoc, useFirebase } from "@/firebase";
@@ -6,7 +5,6 @@ import Image from "next/image";
 import { Star, Download, ShieldCheck, Cpu, HardDrive, LayoutGrid, Monitor, Zap, Share2, MessageCircle, Send, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RelatedGames from "@/components/game/RelatedGames";
-import AdSlot from "@/components/ads/AdSlot";
 import {
   Carousel,
   CarouselContent,
@@ -223,8 +221,6 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
               </div>
             </div>
           </div>
-          
-          <AdSlot variant="vertical" label="Top Trending Now" />
         </div>
       </div>
 

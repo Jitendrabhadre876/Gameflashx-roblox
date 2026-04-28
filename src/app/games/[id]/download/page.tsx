@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -6,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import AdSlot from "@/components/ads/AdSlot";
 import { MOCK_GAMES, GLOBAL_CTA_LINK } from "@/lib/games";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
@@ -61,20 +59,20 @@ export default function DownloadPage() {
       <main className="flex-grow pt-32 pb-20 px-6 md:px-12 max-w-5xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-8 space-y-8">
-            <header className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+          <div className="lg:col-span-12 space-y-8">
+            <header className="space-y-4 text-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                   <Image src={game.image} alt={game.name} fill className="object-cover" />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-black text-white">{game.name}</h1>
-                  <p className="text-white/40 text-sm font-bold uppercase tracking-widest">{game.category} • {game.size}</p>
+                  <h1 className="text-3xl md:text-5xl font-black text-white">{game.name}</h1>
+                  <p className="text-white/40 text-lg font-bold uppercase tracking-widest mt-2">{game.category} • {game.size}</p>
                 </div>
               </div>
             </header>
 
-            <div className="glass-morphism rounded-3xl p-8 md:p-12 text-center space-y-8 relative overflow-hidden">
+            <div className="glass-morphism rounded-3xl p-8 md:p-12 text-center space-y-8 relative overflow-hidden max-w-3xl mx-auto">
                <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
                  <div 
                    className="h-full bg-primary transition-all duration-1000 ease-linear" 
@@ -154,56 +152,35 @@ export default function DownloadPage() {
                )}
             </div>
 
-            <AdSlot label="Recommended for You" />
-
-            <div className="space-y-6">
-               <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                 <Zap className="text-primary w-5 h-5" /> Recommended Offers
+            <div className="space-y-6 max-w-3xl mx-auto pt-10">
+               <h3 className="text-2xl font-black text-white flex items-center gap-3 justify-center mb-8">
+                 <Zap className="text-primary w-6 h-6" /> Recommended Offers
                </h3>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[1, 2].map(i => (
                     <div 
                       key={i} 
-                      className="glass-morphism p-4 rounded-2xl flex items-center gap-4 hover:border-primary/30 transition-all cursor-pointer group"
+                      className="glass-morphism p-6 rounded-[2rem] flex items-center gap-6 hover:border-primary/30 transition-all cursor-pointer group"
                       onClick={() => {
                         setTimeout(() => {
                           window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
                         }, 400);
                       }}
                     >
-                       <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden border border-white/5">
-                          <Image src={`https://picsum.photos/seed/offer${i}/100/100`} alt="Offer" width={100} height={100} className="object-cover" />
+                       <div className="w-20 h-20 rounded-2xl bg-white/5 overflow-hidden border border-white/5 shrink-0">
+                          <Image src={`https://picsum.photos/seed/offer${i}/150/150`} alt="Offer" width={150} height={150} className="object-cover" />
                        </div>
-                       <div className="flex-grow">
-                          <p className="text-xs text-primary font-black uppercase tracking-widest mb-1">Sponsored</p>
-                          <h4 className="font-bold text-white group-hover:text-primary transition-colors">Exclusive Beta Access</h4>
-                          <p className="text-xs text-white/40">Limited time offer for gamers.</p>
+                       <div className="flex-grow min-w-0">
+                          <p className="text-[10px] text-primary font-black uppercase tracking-widest mb-1">Sponsored</p>
+                          <h4 className="font-bold text-lg text-white group-hover:text-primary transition-colors truncate">Exclusive Beta Access</h4>
+                          <p className="text-sm text-white/40 line-clamp-1">Limited time offer for gamers.</p>
                        </div>
-                       <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                       <ArrowRight className="w-6 h-6 text-white/20 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
                     </div>
                   ))}
                </div>
             </div>
           </div>
-
-          {/* Sidebar Ads */}
-          <aside className="lg:col-span-4 space-y-6">
-             <div className="glass-morphism p-6 rounded-3xl space-y-6 sticky top-24">
-                <h3 className="text-lg font-black text-white text-center">Support Gameflashx</h3>
-                <p className="text-sm text-white/50 text-center">Help us keep the downloads free and fast for everyone.</p>
-                <AdSlot variant="vertical" label="Supporter Ad" />
-                <Button 
-                  className="w-full h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-white font-bold gap-2"
-                  onClick={() => {
-                    setTimeout(() => {
-                      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
-                    }, 400);
-                  }}
-                >
-                   <Zap className="w-4 h-4" /> Remove All Ads
-                </Button>
-             </div>
-          </aside>
         </div>
       </main>
 
