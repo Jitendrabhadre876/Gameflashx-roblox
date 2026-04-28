@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -79,10 +78,11 @@ export default function FreeRobuxPage() {
   };
 
   const rewards = [
-    { amount: '50,000', bonus: '+2500 bonus', popular: true },
-    { amount: '24,000', bonus: '+1500 bonus', popular: false },
-    { amount: '11,000', bonus: '+1000 bonus', popular: false },
-    { amount: '2,000', bonus: '+300 bonus', popular: false },
+    { amount: '800', bonus: '+40 bonus', popular: true },
+    { amount: '500', bonus: '+25 bonus', popular: false },
+    { amount: '250', bonus: '+10 bonus', popular: false },
+    { amount: '100', bonus: '+5 bonus', popular: false },
+    { amount: '50', bonus: '+2 bonus', popular: false },
   ];
 
   return (
