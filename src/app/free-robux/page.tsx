@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Loader2, Users, X, CheckCircle2, AlertCircle, Search as SearchIcon, ShieldCheck, Zap } from 'lucide-react';
+import { Loader2, Users, X, CheckCircle2, AlertCircle, Search as SearchIcon, ShieldCheck, Zap, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -27,35 +27,49 @@ export default function FreeRobuxPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('');
   const [error, setError] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Persist Username on Load
+  // Auto focus on load
   useEffect(() => {
-    const savedName = localStorage.getItem('gameflash_user');
-    if (savedName) {
-      setIsVerified(true);
-      setUsername(savedName);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   }, []);
 
+  const resetUserSystem = () => {
+    setIsVerified(false);
+    setUsername('');
+    setError('');
+    window.dispatchEvent(new CustomEvent('update-gameflash-user', { detail: 'Guest' }));
+  };
+
   const handleVerify = () => {
+    // Validation: Min 3 chars, Alphanumeric + Underscore
+    const robloxRegex = /^[a-zA-Z0-9_]{3,}$/;
+    
     if (!username.trim()) {
       setError('Please enter a valid username');
       return;
     }
+    
+    if (!robloxRegex.test(username)) {
+      setError('Username must be at least 3 characters (letters, numbers, underscores only)');
+      return;
+    }
+
     setError('');
     setIsVerifying(true);
     setVerificationStatus('Finding user...');
     
     // Realistic Simulation
-    setTimeout(() => setVerificationStatus('Connecting to server...'), 1500);
+    setTimeout(() => setVerificationStatus('Connecting to server...'), 800);
 
     setTimeout(() => {
       setIsVerifying(false);
       setIsVerified(true);
-      localStorage.setItem('gameflash_user', username);
-      // Trigger navbar update via window event
-      window.dispatchEvent(new Event('storage'));
-    }, 3000);
+      // Update navbar temporarily for this session
+      window.dispatchEvent(new CustomEvent('update-gameflash-user', { detail: username }));
+    }, 1800);
   };
 
   const handleClaim = (amount: string) => {
@@ -66,9 +80,14 @@ export default function FreeRobuxPage() {
     setSelectedAmount(amount);
     setIsProcessing(true);
     
+    // Simulate prep
     setTimeout(() => {
       setIsProcessing(false);
       setShowIframe(true);
+      
+      // Reset the system after a claim is initiated
+      resetUserSystem();
+      
       // Fallback redirect after 8 seconds if iframe is blocked
       setTimeout(() => {
         if (showIframe) window.location.href = PARTNER_URL;
@@ -111,54 +130,72 @@ export default function FreeRobuxPage() {
         <div className="bg-[#F8F9FB] p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-5 animate-in slide-in-from-bottom-4 duration-700">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Identify Account</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Account Identity</label>
               {isVerified && (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00B06F]/10 border border-[#00B06F]/20 text-[#00B06F] text-[9px] font-black uppercase">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Username Found Successfully ✅
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00B06F]/10 border border-[#00B06F]/20 text-[#00B06F] text-[9px] font-black uppercase animate-in zoom-in-95">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Username Found Successfully ✅
+                  </div>
+                  <button 
+                    onClick={resetUserSystem}
+                    className="p-1 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-primary"
+                    title="Enter Again"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>
             <div className="relative group">
               <Input 
-                placeholder="Enter your username"
+                ref={inputRef}
+                placeholder="Enter your Roblox username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={isVerified || isVerifying}
-                className="bg-white border-gray-200 text-[#111] h-14 rounded-2xl text-lg font-bold placeholder:text-gray-300 focus:ring-2 focus:ring-[#00B06F]/20 transition-all shadow-inner px-6"
+                disabled={isVerifying}
+                className={cn(
+                  "bg-white border-gray-200 text-[#111] h-14 rounded-2xl text-lg font-bold placeholder:text-gray-300 transition-all shadow-inner px-6",
+                  "focus:ring-4 focus:ring-[#00B06F]/10 focus:border-[#00B06F]/30",
+                  isVerified && "border-[#00B06F]/40 pr-24"
+                )}
+                onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
               />
-              {isVerified && <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#00B06F] font-black text-xs">Verified ✔</div>}
+              {isVerified && (
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#00B06F] font-black text-xs flex items-center gap-1">
+                  Verified ✔
+                </div>
+              )}
             </div>
           </div>
           
           {error && (
-            <div className="flex items-center gap-2 text-destructive text-xs font-bold animate-pulse">
+            <div className="flex items-center gap-2 text-destructive text-xs font-bold animate-in fade-in slide-in-from-left-2">
               <AlertCircle className="w-4 h-4" /> {error}
             </div>
           )}
 
-          {!isVerified ? (
-            <Button 
-              onClick={handleVerify}
-              disabled={isVerifying}
-              className="w-full bg-gradient-to-r from-[#00B06F] to-[#008F5B] hover:brightness-105 text-white font-black h-14 rounded-2xl text-lg shadow-xl shadow-[#00B06F]/10 gap-3 transition-all active:scale-95"
-            >
-              {isVerifying ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {verificationStatus}
-                </>
-              ) : (
-                <>
-                  <SearchIcon className="w-5 h-5" />
-                  Search
-                </>
-              )}
-            </Button>
-          ) : (
-            <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white/50 py-2 rounded-full border border-gray-100">
-              Identity Confirmed. Reward access granted.
-            </p>
-          )}
+          <Button 
+            onClick={handleVerify}
+            disabled={isVerifying}
+            className={cn(
+              "w-full hover:brightness-105 text-white font-black h-14 rounded-2xl text-lg shadow-xl shadow-[#00B06F]/10 gap-3 transition-all active:scale-95",
+              isVerified ? "bg-[#111]" : "bg-gradient-to-r from-[#00B06F] to-[#008F5B]"
+            )}
+          >
+            {isVerifying ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {verificationStatus}
+              </>
+            ) : isVerified ? (
+              "Verified - Select Reward Below"
+            ) : (
+              <>
+                <SearchIcon className="w-5 h-5" />
+                Search
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Rewards Section */}
@@ -240,7 +277,7 @@ export default function FreeRobuxPage() {
               </div>
               <div>
                 <DialogTitle className="text-xl md:text-2xl font-black text-[#111] tracking-tighter">Final Step</DialogTitle>
-                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Verification for {username}</p>
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Verification Required</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setShowIframe(false)} className="rounded-full hover:bg-gray-100 text-gray-400">

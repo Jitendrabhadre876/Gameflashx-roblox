@@ -12,28 +12,16 @@ export default function Navbar() {
   const [userName, setUserName] = useState("Guest");
   const [isVerified, setIsVerified] = useState(false);
 
-  // Sync with localStorage to show verified username
+  // Sync with temporary session updates
   useEffect(() => {
-    const checkUser = () => {
-      const savedName = localStorage.getItem('gameflash_user');
-      if (savedName) {
-        setUserName(savedName);
-        setIsVerified(true);
-      } else {
-        setUserName("Guest");
-        setIsVerified(false);
-      }
+    const handleUpdate = (e: any) => {
+      const name = e.detail;
+      setUserName(name || "Guest");
+      setIsVerified(name && name !== "Guest");
     };
 
-    checkUser();
-    // Listen for storage changes in other tabs or local triggers
-    window.addEventListener('storage', checkUser);
-    const interval = setInterval(checkUser, 1000); // Polling for same-tab updates
-
-    return () => {
-      window.removeEventListener('storage', checkUser);
-      clearInterval(interval);
-    };
+    window.addEventListener('update-gameflash-user', handleUpdate);
+    return () => window.removeEventListener('update-gameflash-user', handleUpdate);
   }, []);
 
   const navLinks = [
