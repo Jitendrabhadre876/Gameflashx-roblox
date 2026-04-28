@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -45,7 +44,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b-white/5 h-20 px-4 md:px-12 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10 h-20 px-4 md:px-12 flex items-center justify-between">
       <div className="flex items-center gap-6 lg:gap-10">
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center neon-glow-primary group-hover:scale-110 transition-transform">
@@ -99,7 +98,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="absolute top-20 left-0 right-0 bg-[#070B14]/fb backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-5 lg:hidden animate-in slide-in-from-top-5 duration-300">
+        <div className="absolute top-20 left-0 right-0 bg-black/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-5 lg:hidden animate-in slide-in-from-top-5 duration-300">
           <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
               {userName[0]?.toUpperCase()}

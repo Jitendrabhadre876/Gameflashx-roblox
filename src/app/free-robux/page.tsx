@@ -95,8 +95,15 @@ export default function FreeRobuxPage() {
           <div className="relative w-[70px] h-[70px] rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
             <Image src={PROFILE_IMG} alt="Profile" fill className="object-cover" />
           </div>
-          <div className="relative flex-1 h-[70px] rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-inner">
-             <Image src={BANNER_IMG} alt="Banner" fill className="object-cover brightness-95" />
+          <div className="relative flex-1 rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-inner flex items-center">
+             <Image 
+               src={BANNER_IMG} 
+               alt="Banner" 
+               width={800} 
+               height={200} 
+               className="w-full h-auto object-contain brightness-95" 
+               priority
+             />
           </div>
         </div>
 
