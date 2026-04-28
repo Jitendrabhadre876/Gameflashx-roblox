@@ -3,7 +3,6 @@
 
 import { useDoc, useFirebase } from "@/firebase";
 import Image from "next/image";
-import Link from "next/link";
 import { Star, Download, ShieldCheck, Cpu, HardDrive, LayoutGrid, Monitor, Zap, Share2, MessageCircle, Send, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RelatedGames from "@/components/game/RelatedGames";
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/carousel";
 import { useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { Game } from "@/lib/games";
+import { Game, GLOBAL_CTA_LINK } from "@/lib/games";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -34,9 +33,15 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
   const { data: realtimeGame } = useDoc(gameRef);
   const game = realtimeGame || initialGame;
 
-  const downloadUrl = `/games/${game.id}/download`;
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = `Check out ${game.name} on Gameflashx! Instant download, no limits. 🔥`;
+
+  const handleMainDownload = () => {
+    // 400ms delay for smooth transition
+    setTimeout(() => {
+      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+    }, 400);
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
@@ -88,14 +93,13 @@ export default function GameDetailClient({ initialGame }: { initialGame: Game })
               <Zap className="w-5 h-5 fill-current" /> ⚡ Fastest Download Available
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Link href={downloadUrl}>
-                <Button 
-                  size="lg" 
-                  className="h-14 px-12 bg-primary hover:bg-primary/80 text-primary-foreground font-black rounded-full neon-glow-primary text-xl gap-3"
-                >
-                  <Download className="w-6 h-6" /> Download Now
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                className="h-14 px-12 bg-primary hover:bg-primary/80 text-primary-foreground font-black rounded-full neon-glow-primary text-xl gap-3"
+                onClick={handleMainDownload}
+              >
+                <Download className="w-6 h-6" /> Download Now
+              </Button>
               <div className="flex items-center gap-2">
                 <Button 
                   size="icon" 

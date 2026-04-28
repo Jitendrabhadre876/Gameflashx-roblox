@@ -2,7 +2,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Image from "next/image";
-import Link from "next/link";
 import { 
   Gift, 
   History, 
@@ -11,11 +10,11 @@ import {
   Search, 
   AlertCircle, 
   Copy, 
-  CheckCircle2, 
   ChevronRight,
   Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GLOBAL_CTA_LINK } from "@/lib/games";
 
 export const metadata = {
   title: "Enjoy Playing Be a Brainrot - All New Codes & Guide | Gameflashx",
@@ -167,13 +166,18 @@ export default function BrainrotArticlePage() {
 
           {/* Final CTA Section */}
           <div className="pt-12">
-            <Link href="/free-robux" className="block">
-              <Button className="w-full h-20 bg-gradient-to-r from-primary to-secondary hover:brightness-105 text-primary-foreground font-black text-2xl rounded-[1.5rem] shadow-xl shadow-primary/20 flex items-center justify-center gap-4 transition-all active:scale-95 group overflow-hidden relative">
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span>Get Free Rewards Now</span>
-                <ChevronRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </Link>
+            <Button 
+              className="w-full h-20 bg-gradient-to-r from-primary to-secondary hover:brightness-105 text-primary-foreground font-black text-2xl rounded-[1.5rem] shadow-xl shadow-primary/20 flex items-center justify-center gap-4 transition-all active:scale-95 group overflow-hidden relative"
+              onClick={() => {
+                setTimeout(() => {
+                  window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+                }, 400);
+              }}
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span>Get Free Rewards Now</span>
+              <ChevronRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
+            </Button>
             <p className="text-center text-gray-300 text-[10px] font-black uppercase tracking-[0.3em] mt-6">
               Official Partner Reward Distribution System
             </p>

@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Play } from "lucide-react";
-import { MOCK_GAMES } from "@/lib/games";
-import Link from "next/link";
+import { MOCK_GAMES, GLOBAL_CTA_LINK } from "@/lib/games";
 
 interface Particle {
   id: number;
@@ -48,6 +47,13 @@ export default function Hero() {
   }, [featuredGames.length]);
 
   const activeGame = featuredGames[currentIndex];
+
+  const handleCTAClick = () => {
+    // 400ms delay for smooth transition feel
+    setTimeout(() => {
+      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+    }, 400);
+  };
 
   return (
     <section className="relative h-[90vh] md:h-[85vh] w-full overflow-hidden flex items-center pt-20">
@@ -91,16 +97,21 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-4 pt-4">
-            <Link href={`/game/${activeGame.id}`}>
-              <Button size="lg" className="h-14 px-10 bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary gap-2 text-lg">
-                <Play className="fill-current w-5 h-5" /> Download Now
-              </Button>
-            </Link>
-            <Link href="/category/action">
-              <Button size="lg" variant="outline" className="h-14 px-10 border-white/20 hover:bg-white/10 text-white font-bold rounded-full gap-2 text-lg backdrop-blur-md">
-                Browse Games <ChevronRight className="w-5 h-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="h-14 px-10 bg-primary hover:bg-primary/80 text-primary-foreground font-bold rounded-full neon-glow-primary gap-2 text-lg"
+              onClick={handleCTAClick}
+            >
+              <Play className="fill-current w-5 h-5" /> Download Now
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="h-14 px-10 border-white/20 hover:bg-white/10 text-white font-bold rounded-full gap-2 text-lg backdrop-blur-md"
+              onClick={handleCTAClick}
+            >
+              Browse Games <ChevronRight className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </div>

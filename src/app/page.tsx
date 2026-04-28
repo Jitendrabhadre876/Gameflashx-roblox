@@ -6,12 +6,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import CloudinaryImage from "@/components/ui/CloudinaryImage";
-import { Download, Loader2, Sparkles, TrendingUp, Gamepad2, Zap } from "lucide-react";
-import { MOCK_GAMES } from "@/lib/games";
+import { Download, Loader2, Sparkles, TrendingUp } from "lucide-react";
+import { MOCK_GAMES, GLOBAL_CTA_LINK } from "@/lib/games";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-const CPA_LINK = "https://Gameflashx.space/cl/i/grr84r";
 
 export default function HomePage() {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -21,10 +19,11 @@ export default function HomePage() {
     setSelectedGame(gameName);
     setIsDownloading(true);
     
+    // Smooth 1.5s delay before opening the global monetization link
     setTimeout(() => {
       setIsDownloading(false);
-      window.open(CPA_LINK, "_blank");
-    }, 2000);
+      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+    }, 1500);
   };
 
   return (
@@ -98,7 +97,15 @@ export default function HomePage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] -z-1" />
             <h2 className="text-4xl md:text-5xl font-black text-white leading-tight">Ready for your next adventure?</h2>
             <p className="text-white/60 max-w-xl mx-auto">Access the world's largest collection of premium mobile games with zero limits and maximum speed.</p>
-            <Button size="lg" className="h-16 px-12 bg-primary hover:bg-primary/80 text-white font-black rounded-full shadow-xl shadow-primary/20 text-xl">
+            <Button 
+              size="lg" 
+              className="h-16 px-12 bg-primary hover:bg-primary/80 text-white font-black rounded-full shadow-xl shadow-primary/20 text-xl"
+              onClick={() => {
+                setTimeout(() => {
+                  window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+                }, 400);
+              }}
+            >
               Browse Full Catalog
             </Button>
           </div>

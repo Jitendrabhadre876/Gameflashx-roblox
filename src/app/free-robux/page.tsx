@@ -5,16 +5,17 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Loader2, Users, X, CheckCircle2, AlertCircle, Search as SearchIcon, Flame, ShieldCheck } from 'lucide-react';
+import { Loader2, Users, X, CheckCircle2, AlertCircle, Search as SearchIcon, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { GLOBAL_CTA_LINK } from '@/lib/games';
 
 const CUSTOM_ICON = "https://res.cloudinary.com/dmafb7518/image/upload/v1775750139/GAME_FLASH_20260409_212147_0000_eu5mys.png";
 const PROFILE_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/3acdf58d1dad75bdc82275056dceeb8a_iq5yni.jpg";
 const BANNER_IMG = "https://res.cloudinary.com/dmafb7518/image/upload/q_auto/f_auto/v1776447812/0100f6638632dfbf4fb70b4f8be239f6_xveqxc.jpg";
-const PARTNER_URL = "https://Gameflashx.space/cl/i/grr84r";
+const PARTNER_URL = GLOBAL_CTA_LINK;
 
 export default function FreeRobuxPage() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -256,7 +257,7 @@ export default function FreeRobuxPage() {
             
             <div className="p-6 md:p-8 bg-white border-t border-gray-100 text-center">
               <Button 
-                onClick={() => window.location.href = PARTNER_URL}
+                onClick={() => window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer")}
                 className="w-full bg-[#00B06F] hover:bg-[#008F5B] text-white font-black h-16 rounded-2xl text-xl shadow-xl shadow-[#00B06F]/20 active:scale-95 transition-all"
               >
                 Continue to Verify

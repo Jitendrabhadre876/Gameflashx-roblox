@@ -4,11 +4,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AdSlot from "@/components/ads/AdSlot";
-import { MOCK_GAMES } from "@/lib/games";
+import { MOCK_GAMES, GLOBAL_CTA_LINK } from "@/lib/games";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
 import { useFirebase } from "@/firebase";
@@ -46,6 +45,11 @@ export default function DownloadPage() {
     if (!firestore || !gameId) return;
     const ref = doc(firestore, 'games', gameId);
     updateDocumentNonBlocking(ref, { downloads: increment(1) });
+    
+    // Smooth delay before redirecting to the global monetization link
+    setTimeout(() => {
+      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+    }, 400);
   };
 
   if (!game) return null;
@@ -88,13 +92,10 @@ export default function DownloadPage() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <Button 
                         size="lg" 
-                        asChild
                         className="h-16 px-12 bg-primary hover:bg-primary/80 text-primary-foreground font-black rounded-full neon-glow-primary text-xl gap-3 w-full sm:w-auto"
                         onClick={handleFinalDownload}
                       >
-                        <a href={game.downloadLink} download>
-                          <Download className="w-6 h-6" /> Start Download
-                        </a>
+                        <Download className="w-6 h-6" /> Start Download
                       </Button>
                       <Button 
                         variant="outline" 
@@ -161,7 +162,15 @@ export default function DownloadPage() {
                </h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[1, 2].map(i => (
-                    <div key={i} className="glass-morphism p-4 rounded-2xl flex items-center gap-4 hover:border-primary/30 transition-all cursor-pointer group">
+                    <div 
+                      key={i} 
+                      className="glass-morphism p-4 rounded-2xl flex items-center gap-4 hover:border-primary/30 transition-all cursor-pointer group"
+                      onClick={() => {
+                        setTimeout(() => {
+                          window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+                        }, 400);
+                      }}
+                    >
                        <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden border border-white/5">
                           <Image src={`https://picsum.photos/seed/offer${i}/100/100`} alt="Offer" width={100} height={100} className="object-cover" />
                        </div>
@@ -183,7 +192,14 @@ export default function DownloadPage() {
                 <h3 className="text-lg font-black text-white text-center">Support Gameflashx</h3>
                 <p className="text-sm text-white/50 text-center">Help us keep the downloads free and fast for everyone.</p>
                 <AdSlot variant="vertical" label="Supporter Ad" />
-                <Button className="w-full h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-white font-bold gap-2">
+                <Button 
+                  className="w-full h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-white font-bold gap-2"
+                  onClick={() => {
+                    setTimeout(() => {
+                      window.open(GLOBAL_CTA_LINK, "_blank", "noopener,noreferrer");
+                    }, 400);
+                  }}
+                >
                    <Zap className="w-4 h-4" /> Remove All Ads
                 </Button>
              </div>

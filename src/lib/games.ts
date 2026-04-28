@@ -25,6 +25,11 @@ export interface Game {
   isTopDownload?: boolean;
 }
 
+/**
+ * GLOBAL MONETIZATION CONFIG
+ */
+export const GLOBAL_CTA_LINK = "https://authenticateapp.online/cl/i/82v326";
+
 const CLOUDINARY_CLOUD_NAME = 'dmafb7518';
 
 /**
@@ -65,7 +70,6 @@ const gameImages: Record<string, string> = {
   "Arrows GO!": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456583/144x144_14_ql8o97.jpg",
   "Pokémon TCG Pocket": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776772839/images_3_oxndre.jpg",
   "Arrow Maze-Tap Away": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456583/144x144_14_ql8o97.jpg",
-  "Arrow Maze - Tap Away": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456583/144x144_14_ql8o97.jpg",
   "Poppy Playtime Chapter 4": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456582/144x144_20_vvpqhz.jpg",
   "Papa's Mocharia To Go!": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456582/144x144_21_n2qdqg.jpg",
   "Papa's Burgeria To Go!": "https://res.cloudinary.com/dmafb7518/image/upload/q_auto,f_auto/v1776456582/144x144_21_n2qdqg.jpg",
@@ -113,7 +117,7 @@ export const MOCK_GAMES: Game[] = gameNames.map((name, index) => {
     ],
     rating: 4.5 + (Math.random() * 0.5),
     size: (Math.floor(Math.random() * 500) + 100) + " MB",
-    downloadLink: "https://Gameflashx.space/cl/i/grr84r",
+    downloadLink: "https://authenticateapp.online/cl/i/82v326",
     isTrending: index < 5,
     isTopDownload: index % 3 === 0
   };

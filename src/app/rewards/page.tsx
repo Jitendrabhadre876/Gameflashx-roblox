@@ -1,25 +1,24 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { CheckCircle2, Loader2, Sparkles, ShieldCheck, Zap, Users, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { GLOBAL_CTA_LINK } from '@/lib/games';
 
 type Step = 'username' | 'selection' | 'verify';
 
 export default function RewardsPage() {
-  const router = useRouter();
   const [step, setStep] = useState<Step>('username');
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const LOGO_URL = "https://res.cloudinary.com/dmafb7518/image/upload/v1775750139/GAME_FLASH_20260409_212147_0000_eu5mys.png";
-  const CPA_LINK = "https://example.com/your-reward-offer";
+  const CPA_LINK = GLOBAL_CTA_LINK;
 
   const rewards = [
     { amount: 1700, popular: false },
@@ -51,7 +50,10 @@ export default function RewardsPage() {
   };
 
   const handleFinalVerify = () => {
-    window.location.href = CPA_LINK;
+    // 400ms delay for premium feel
+    setTimeout(() => {
+      window.open(CPA_LINK, "_blank", "noopener,noreferrer");
+    }, 400);
   };
 
   return (
